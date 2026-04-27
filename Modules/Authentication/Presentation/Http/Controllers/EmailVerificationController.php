@@ -4,7 +4,7 @@ namespace Modules\Authentication\Presentation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Modules\Authentication\Application\Actions\SendEmailVerificationNotificationAction;
-use Modules\Authentication\Application\DTO\Auth\Input\SendEmailVerificationInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\SendEmailVerificationInputDto;
 use Modules\Shared\Domain\ValueObjects\UserId;
 use Modules\Shared\Presentation\Http\Controllers\BaseController;
 

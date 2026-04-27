@@ -3,7 +3,6 @@
 namespace Modules\Authentication\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Modules\Authentication\Infrastructure\Models\UserModel;
 use Tests\TestCase;
@@ -12,14 +11,9 @@ class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
 
-
     public function test_email_verification_send(): void
     {
-        $user = UserModel::create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $user = UserModel::factory()->unverified()->create();
 
         $token = $user->createToken('Personal Access Token')->plainTextToken;
         $response = $this->withHeaders([
@@ -38,7 +32,7 @@ class EmailVerificationTest extends TestCase
 
     public function test_email_verification_email_already_verified(): void
     {
-        $user = UserModel::factory()->verified()->create();
+        $user = UserModel::factory()->create();
         $token = $user->createToken('Personal Access Token')->plainTextToken;
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,

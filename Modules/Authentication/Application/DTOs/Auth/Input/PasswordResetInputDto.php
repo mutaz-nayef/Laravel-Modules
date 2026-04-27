@@ -1,31 +1,31 @@
 <?php
 
-namespace Modules\Authentication\Application\DTO\Auth\Input;
+namespace Modules\Authentication\Application\DTOs\Auth\Input;
 
-class RegisterInputDto
+class PasswordResetInputDto
 {
     public function __construct(
-        public string $name,
         public string $email,
         public string $password,
+        public string $token,
     ) {
     }
 
-    public static function fromArray(array $data): RegisterInputDto
+    public static function fromArray(array $data): self
     {
         return new self(
-            name: $data['name'],
             email: $data['email'],
             password: $data['password'],
+            token: $data['token'],
         );
     }
 
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
             'email' => $this->email,
-            'password' => $this->password
+            'password' => $this->password,
+            'token' => $this->token,
         ];
     }
 }

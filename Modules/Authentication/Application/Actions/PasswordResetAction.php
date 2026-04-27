@@ -3,7 +3,7 @@
 
 namespace Modules\Authentication\Application\Actions;
 
-use Modules\Authentication\Application\DTO\Auth\Input\PasswordResetInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\PasswordResetInputDto;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
 use Modules\Authentication\Domain\Events\PasswordResetSuccessfully;
 use Modules\Authentication\Domain\ValueObjects\Email;

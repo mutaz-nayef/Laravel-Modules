@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authentication\Application\DTO\Auth\Input;
+namespace Modules\Authentication\Application\DTOs\Auth\Input;
 
 use Modules\Authentication\Domain\ValueObjects\Email;
 

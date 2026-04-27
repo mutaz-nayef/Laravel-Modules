@@ -2,7 +2,7 @@
 
 namespace Modules\Authentication\Application\Actions;
 
-use Modules\Authentication\Application\DTO\Auth\Input\LogoutInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\LogoutInputDto;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 
 final class LogoutUserAction

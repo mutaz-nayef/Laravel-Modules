@@ -4,7 +4,7 @@
 namespace Modules\Authentication\Application\Actions;
 
 
-use Modules\Authentication\Application\DTO\Auth\Input\SendEmailVerificationInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\SendEmailVerificationInputDto;
 use Modules\Authentication\Domain\Contracts\EmailVerificationInterface;
 
 class SendEmailVerificationNotificationAction

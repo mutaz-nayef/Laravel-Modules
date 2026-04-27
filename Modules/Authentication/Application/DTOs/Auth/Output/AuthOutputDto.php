@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authentication\Application\DTO\Auth\Output;
+namespace Modules\Authentication\Application\DTOs\Auth\Output;
 
 
 final readonly class AuthOutputDto

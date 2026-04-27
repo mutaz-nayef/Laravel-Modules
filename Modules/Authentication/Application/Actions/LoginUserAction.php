@@ -2,8 +2,8 @@
 
 namespace Modules\Authentication\Application\Actions;
 
-use Modules\Authentication\Application\DTO\Auth\Input\LoginInputDto;
-use Modules\Authentication\Application\DTO\Auth\Output\AuthOutputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\LoginInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Output\AuthOutputDto;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Exceptions\EmailNotVerifiedException;

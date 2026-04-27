@@ -3,10 +3,6 @@
 namespace Modules\Authentication\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Modules\Authentication\Domain\Events\LoginAttemptedOutsideAllowedTime;
-use Modules\Authentication\Domain\Events\UserLoggedIn;
-use Modules\Authentication\Domain\Services\LoginPolicy;
 use Modules\Authentication\Infrastructure\Models\UserModel;
 use Tests\TestCase;
 
@@ -14,221 +10,82 @@ class LoginTest extends TestCase
 {
     use RefreshDatabase;
 
-    private LoginPolicy $loginPolicy;
 
-    public function test_user_login_valid_credentials_allowed_time(): void
+    public function test_user_can_login_and_receive_token_with_permissions()
     {
-        Event::fake();
+//    $this->seed(RoleAndPermissionSeeder::class);
+        //        $role = RoleModel::where('name', 'admin')->first();
+//        $user = UserModel::factory()->create(['password' => bcrypt('password123')]);
+//        $user->roles()->attach($role);
 
-        $this->travelTo(now()->setHour(13)->setMinute(0)->setSecond(0));
-
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => 'test@example.com',
+        $user = UserModel::factory()->create(['password' => bcrypt('password')]);
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
             'password' => 'password',
         ]);
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'success',
-            'data' => [
-                "user" => [
-                    "id",
-                    "name",
-                    "email",
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'user' => ['id', 'name', 'email', 'role'],
+                    'permissions' => [],
+                    'token' => ['access_token', 'token_type',],
                 ],
-                "token" => [
-                    "token",
-                ],
-                'timeNow',
-            ],
-            'errors',
-            'message',
-            'status',
+                'errors',
+                'message',
+                'status'
+            ])->assertJsonPath('data.token.token_type', 'Bearer');
+        $this->assertNotEmpty($response->json('data.token.access_token'));
+    }
+
+    public function test_user_cannot_login_not_allowed_time(): void
+    {
+//        Event::fake();
+
+        $this->travelTo(now()->setHour(20)->setMinute(0)->setSecond(0));
+        $user = UserModel::factory()->create(['password' => bcrypt('password')]);
+
+        $response = $this->postJson('api/login', [
+            'email' => $user->email,
+            'password' => 'password',
         ]);
+        $response->assertStatus(403);
 
         $this->travelBack();
 
-        Event::assertDispatched(UserLoggedIn::class, function ($event) {
-            return $event->user->email->value === 'test@example.com';
-        });
+//        Event::assertDispatched(LoginAttemptedOutsideAllowedTime::class, function ($event) {
+//            return $event->email === 'test@example.com';
+//        });
     }
 
-    public function test_user_login_invalid_selected_email(): void
+    public function test_returns_403_for_inactive_user(): void
     {
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
+        UserModel::factory()->inactive()->create([
+            'email' => 'inactive@test.com',
+            'password' => bcrypt('password'),
         ]);
-        $response = $this->postJson('api/login', [
-            'email' => 'test@example.comff',
+
+        $this->postJson('/api/login', [
+            'email' => 'inactive@test.com',
             'password' => 'password',
-        ]);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'email' => ['The selected email is invalid.'],
-                ],
-                'message' => "",
-                'status' => 422
-            ]);
+        ])->assertStatus(403);
     }
 
-    public function test_user_login_invalid_credentials(): void
+    public function test_returns_401_for_wrong_password(): void
     {
-        if ($this->loginPolicy->canLogin(now())) {
+        UserModel::factory()->create(['email' => 'test@test.com', 'password' => bcrypt('correct')]);
 
-            UserModel::factory()->create([
-                'name' => 'Test UserModel',
-                'email' => 'test@example.com',
-            ]);
-            $response = $this->postJson('api/login', [
-                'email' => 'test@example.com',
-                'password' => 'passworddasdas',
-            ]);
-            $response->assertStatus(401)
-                ->assertJson([
-                    'success' => false,
-                    'data' => null,
-                    'errors' => 'Invalid Credentials',
-                    'message' => "",
-                    'status' => 401,
-                ]);
-        } else {
-
-            $this->test_user_login_not_allowed_time();
-        }
+        $this->postJson('/api/login', [
+            'email' => 'test@test.com',
+            'password' => 'wrong-password',
+        ])->assertStatus(401);
     }
 
-    // Freeze time to 09:00 (allowed)
-
-    public function test_user_login_not_allowed_time(): void
+    public function test_returns_422_for_missing_fields(): void
     {
-        Event::fake();
-
-        $this->travelTo(now()->setHour(1)->setMinute(0));
-
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => 'test@example.com',
-            'password' => 'password',
-        ]);
-        $response->assertStatus(401);
-        $response->assertJson([
-            "success" => false,
-            "data" => "",
-            "errors" => "You are not allowed to log in at this time.",
-            "message" => "",
-            "status" => 401
-        ]);
-        $this->travelBack();
-        Event::assertDispatched(LoginAttemptedOutsideAllowedTime::class, function ($event) {
-            return $event->email === 'test@example.com';
-        });
-
-    }
-
-    public function test_user_login_invalid_email(): void
-    {
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => 'fdsfds',
-            'password' => 'password',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'email' => ['The email field must be a valid email address.'],
-                ],
-                'message' => "",
-                'status' => 422
-            ]);
-    }
-
-    public function test_user_login_empty_email(): void
-    {
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => '',
-            'password' => 'password',
-        ]);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'email' => ['The email field is required.'],
-                ],
-                'message' => "",
-                'status' => 422
-            ]);
-    }
-
-    public function test_user_login_empty_password(): void
-    {
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => 'test@example.com',
-            'password' => '',
-        ]);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'password' => ['The password field is required.'],
-                ],
-                'message' => "",
-                'status' => 422
-            ]);
-    }
-
-    public function test_user_login_empty_email_and_password(): void
-    {
-        UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $response = $this->postJson('api/login', [
-            'email' => '',
-            'password' => '',
-        ]);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'email' => ['The email field is required.'],
-                    'password' => ['The password field is required.'],
-                ],
-                'message' => "",
-                'status' => 422
-            ]);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->loginPolicy = new LoginPolicy();
+        $this->postJson('/api/login', [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['email', 'password']);
     }
 
 

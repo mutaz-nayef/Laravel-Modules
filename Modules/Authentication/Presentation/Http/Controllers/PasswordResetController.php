@@ -4,8 +4,8 @@ namespace Modules\Authentication\Presentation\Http\Controllers;
 
 use Modules\Authentication\Application\Actions\ForgetPasswordAction;
 use Modules\Authentication\Application\Actions\PasswordResetAction;
-use Modules\Authentication\Application\DTO\Auth\Input\ForgetPasswordInputDto;
-use Modules\Authentication\Application\DTO\Auth\Input\PasswordResetInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\ForgetPasswordInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\PasswordResetInputDto;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Presentation\Http\Requests\ForgetPasswordRequest;
 use Modules\Authentication\Presentation\Http\Requests\ResetPasswordRequest;

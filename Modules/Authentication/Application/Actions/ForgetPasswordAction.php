@@ -3,7 +3,7 @@
 
 namespace Modules\Authentication\Application\Actions;
 
-use Modules\Authentication\Application\DTO\Auth\Input\ForgetPasswordInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\ForgetPasswordInputDto;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
 use Modules\Authentication\Domain\Events\PasswordResetRequested;
 

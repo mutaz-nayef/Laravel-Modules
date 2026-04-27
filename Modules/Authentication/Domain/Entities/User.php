@@ -84,10 +84,10 @@ final class User
 
     protected function verifyLoginTime(): bool
     {
-        $now = new \DateTime();
-        $start = new \DateTime('08:00');
-        $end = new \DateTime('14:00');
-
+        // fix:
+        $now = now()->hour;
+        $start = (int) new  \DateTime('08:00')->format('H');
+        $end = (int) new  \DateTime('14:00')->format('H');
         return ($now >= $start && $now <= $end);
     }
 

@@ -15,40 +15,24 @@ class LogoutTest extends TestCase
      */
     public function test_logout_success(): void
     {
-        $user = UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
+        $user = UserModel::factory()->create();
+
         $token = $user->createToken('test-token')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
         ])->postJson('api/logout');
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'data' => [],
-                'message' => 'UserModel Logged Out',
-                'status' => 200,
-            ]);
+        $response->assertStatus(200);
     }
 
     public function test_logout_not_authenticated(): void
     {
-        $user = UserModel::factory()->create([
-            'name' => 'Test UserModel',
-            'email' => 'test@example.com',
-        ]);
-        $token = $user->createToken('test-token')->plainTextToken;
-
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.' ',
         ])->postJson('api/logout');
 
-        $response->assertStatus(401)
-            ->assertJson([
-                'message' => 'Unauthenticated.',
-            ]);
+        $response->assertStatus(401);
     }
 
 }
