@@ -1,12 +1,12 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Authentication\Infrastructure\Database\seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Authentication\Infrastructure\Models\UserModel;
 
-class DatabaseSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // UserModel::factory(10)->create();
 
-        User::factory()->create([
+        UserModel::factory()->create([
             'name' => 'Mutaz Nayef',
             'email' => 'mutaz@example.com',
         ]);
