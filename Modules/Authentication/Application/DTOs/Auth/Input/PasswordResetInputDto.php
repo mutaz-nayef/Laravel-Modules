@@ -1,0 +1,31 @@
+<?php
+
+namespace Modules\Authentication\Application\DTOs\Auth\Input;
+
+class PasswordResetInputDto
+{
+    public function __construct(
+        public string $email,
+        public string $password,
+        public string $token,
+    ) {
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            email: $data['email'],
+            password: $data['password'],
+            token: $data['token'],
+        );
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'email' => $this->email,
+            'password' => $this->password,
+            'token' => $this->token,
+        ];
+    }
+}
