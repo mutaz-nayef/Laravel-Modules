@@ -15,4 +15,10 @@ class LoginRequest extends BaseFormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'email.exists' => 'Invalid Credentials.',
+        ];
+    }
 }

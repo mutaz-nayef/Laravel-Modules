@@ -11,8 +11,8 @@ final readonly class AuthOutputDto
         public string $email,
         public string $token,
         public string $tokenType,
-        public string $roleName,
-        public array $permissions,
+        public ?array $roles,
+        public ?array $permissions,
         public ?array $timeNow = null,
     ) {
 

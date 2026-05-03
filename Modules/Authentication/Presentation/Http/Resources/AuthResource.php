@@ -5,6 +5,8 @@ namespace Modules\Authentication\Presentation\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Authentication\Application\DTOs\Auth\Output\AuthOutputDto;
+use Modules\Authorization\Application\DTOs\RoleOutputDto;
+use Modules\Authorization\Presentation\Http\Resources\RoleResource;
 
 class AuthResource extends JsonResource
 {
@@ -20,7 +22,15 @@ class AuthResource extends JsonResource
                 'id' => $this->output->userId,
                 'name' => $this->output->name,
                 'email' => $this->output->email,
-                'role' => $this->output->roleName,
+                'roles' => RoleResource::collection(array_map(
+                    fn($role) => new RoleOutputDto(
+                        id: $role->id(),
+                        name: $role->name(),
+                        display_name: $role->displayName(),
+                        permissions: $role->permissions(),
+                    ),
+                    $this->output->roles
+                )),
             ],
             'permissions' => $this->output->permissions,
             'token' => [

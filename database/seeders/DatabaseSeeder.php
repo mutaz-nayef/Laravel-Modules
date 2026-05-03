@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Authentication\Infrastructure\Models\UserModel;
+use Modules\Authorization\Infrastructure\Database\Seeders\RolesAndPermissionsSeeder;
+use Modules\Authorization\Infrastructure\Models\RoleModel;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,9 +19,15 @@ class DatabaseSeeder extends Seeder
     {
         // UserModel::factory(10)->create();
 
-        User::factory()->create([
+
+        $this->call(RolesAndPermissionsSeeder::class);
+        $adminRole = RoleModel::where('name', 'admin')->first();
+        $user = UserModel::factory()->create([
             'name' => 'Mutaz Nayef',
             'email' => 'mutaz@example.com',
         ]);
+        $user->roles()->attach($adminRole);
+
+
     }
 }

@@ -13,4 +13,9 @@ interface UserRepositoryInterface
     public function findByEmail(Email $email): ?User;
 
     public function save(User $user): ?User;
+
+    public function saveRoles(User $user): ?User;
+
+    public function savePermissions(User $user): ?User;
+
 }

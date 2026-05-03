@@ -7,10 +7,13 @@ use Modules\Authentication\Domain\Entities\User;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authentication\Infrastructure\Models\UserModel;
+use Modules\Authorization\Infrastructure\Mappers\PermissionMapper;
+use Modules\Authorization\Infrastructure\Mappers\RoleMapper;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {
+
     public function findById(UserId $id): ?User
     {
         $model = UserModel::find($id->value());
@@ -25,8 +28,10 @@ class EloquentUserRepository implements UserRepositoryInterface
             name: $model->name,
             email: new Email($model->email),
             password: new HashedPassword($model->password),
-            isActive: $model->is_active ? true : false,
+            isActive: (bool) $model->is_active,
             isEmailVerified: $model->email_verified_at !== null,
+            roles: RoleMapper::toDomainEntity($model->roles),
+            permissions: PermissionMapper::toDomainEntity($model->refresh()->permissions),
         );
     }
 
@@ -39,13 +44,45 @@ class EloquentUserRepository implements UserRepositoryInterface
 
     public function save(User $user): ?User
     {
-        $model = UserModel::create([
-            'name' => $user->name(),
-            'email' => $user->email()->value(),
-            'password' => $user->password()->hash()
-        ]);
-        return $model ? $this->toDomainEntity($model->refresh()) : null;
+        $model = UserModel::updateOrCreate(
+            [
+                'id' => $user->id()?->value(),
+            ],
+            [
+                'name' => $user->name(),
+                'email' => $user->email()->value(),
+                'password' => $user->password()->hash()
+            ]
+        );
+        $model = $this->syncRoles($model, $user->roles());
 
+        return $model ? $this->toDomainEntity($model->refresh()) : null;
+    }
+
+    private function syncRoles(UserModel $model, array $roles): UserModel
+    {
+        $model->roles()->sync(array_map(fn($r) => $r->id()->value(), $roles));
+
+        return $model;
+    }
+
+    public function saveRoles(User $user): ?User
+    {
+        $model = UserModel::findOrFail($user->id()->value());
+
+        $model->roles()->sync(array_map(fn($r) => $r->id()->value(), $user->roles()));
+
+        return $this->toDomainEntity($model->refresh());
+    }
+
+    public function savePermissions(User $user): ?User
+    {
+        $model = UserModel::findOrFail($user->id()->value());
+
+//        if (!empty($user->permissions())) {
+        $model->permissions()->sync(array_map(fn($p) => $p->id()->value(), $user->permissions()));
+//        }
+        return $model ? $this->toDomainEntity($model->refresh()) : null;
     }
 
 }

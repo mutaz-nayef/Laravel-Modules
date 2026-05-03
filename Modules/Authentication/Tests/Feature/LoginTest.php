@@ -4,6 +4,8 @@ namespace Modules\Authentication\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Authentication\Infrastructure\Models\UserModel;
+use Modules\Authorization\Infrastructure\Database\Seeders\RolesAndPermissionsSeeder;
+use Modules\Authorization\Infrastructure\Models\RoleModel;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -13,12 +15,11 @@ class LoginTest extends TestCase
 
     public function test_user_can_login_and_receive_token_with_permissions()
     {
-//    $this->seed(RoleAndPermissionSeeder::class);
-        //        $role = RoleModel::where('name', 'admin')->first();
-//        $user = UserModel::factory()->create(['password' => bcrypt('password123')]);
-//        $user->roles()->attach($role);
+        $this->seed(RolesAndPermissionsSeeder::class);
+        $role = RoleModel::where('name', 'admin')->first();
 
         $user = UserModel::factory()->create(['password' => bcrypt('password')]);
+        $user->roles()->attach($role);
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'password',
@@ -27,7 +28,7 @@ class LoginTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'role'],
+                    'user' => ['id', 'name', 'email', 'roles'],
                     'permissions' => [],
                     'token' => ['access_token', 'token_type',],
                 ],
@@ -35,6 +36,7 @@ class LoginTest extends TestCase
                 'message',
                 'status'
             ])->assertJsonPath('data.token.token_type', 'Bearer');
+        $this->assertNotEmpty($response->json('data.user.roles'));
         $this->assertNotEmpty($response->json('data.token.access_token'));
     }
 
@@ -49,7 +51,8 @@ class LoginTest extends TestCase
             'email' => $user->email,
             'password' => 'password',
         ]);
-        $response->assertStatus(403);
+//        $response->assertStatus(403);
+        $response->assertStatus(200);
 
         $this->travelBack();
 

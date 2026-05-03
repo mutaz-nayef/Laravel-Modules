@@ -3,6 +3,7 @@
 namespace Modules\Authentication\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Modules\Authentication\Infrastructure\Models\UserModel;
 use Tests\TestCase;
@@ -10,6 +11,13 @@ use Tests\TestCase;
 class EmailVerificationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_db_connection_is_active(): void
+    {
+        $dbName = DB::connection()->getDatabaseName();
+
+        $this->assertNotNull($dbName);
+    }
 
     public function test_email_verification_send(): void
     {

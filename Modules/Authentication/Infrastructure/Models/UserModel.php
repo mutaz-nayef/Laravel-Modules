@@ -5,10 +5,13 @@ namespace Modules\Authentication\Infrastructure\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Authentication\Infrastructure\Database\factories\UserFactory;
+use Modules\Authorization\Infrastructure\Models\PermissionModel;
+use Modules\Authorization\Infrastructure\Models\RoleModel;
 
 #[UseFactory(UserFactory::class)]
 class UserModel extends Authenticatable implements MustVerifyEmail
@@ -40,5 +43,15 @@ class UserModel extends Authenticatable implements MustVerifyEmail
     protected static function newFactory(): UserFactory
     {
         return UserFactory::new();
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(RoleModel::class, 'user_roles', 'user_id', 'role_id');
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(PermissionModel::class, 'user_permissions', 'user_id', 'permission_id');
     }
 }

@@ -2,56 +2,39 @@
 
 namespace Modules\Authentication\Domain\Entities;
 
+use DateTimeImmutable;
 use Modules\Authentication\Domain\Events\BaseEvent;
 use Modules\Authentication\Domain\Events\LoginAttemptedOutsideAllowedTime;
 use Modules\Authentication\Domain\Events\UserLoggedIn;
-use Modules\Authentication\Domain\Events\UserRegistered;
 use Modules\Authentication\Domain\Exceptions\EmailNotVerifiedException;
 use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
+use Modules\Authorization\Domain\Entities\Permission;
+use Modules\Authorization\Domain\Entities\Role;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 final class User
 {
     private array $events = [];
-//    /**
-//     * @param Role[] $roles
-//     */
+
+    /**
+     * @param  Role[]  $roles
+     * @param  Permission[]  $permissions
+     */
     public function __construct(
-        private readonly ?UserId $id = null,
         private readonly string $name,
         private readonly Email $email,
         private readonly HashedPassword $password,
         private readonly bool $isActive,
         private readonly bool $isEmailVerified,
-//        private ?array $roles = null,
-    )
-    {
-    }
+        private ?array $roles = [],
+        private ?array $permissions = [],
+        private readonly ?UserId $id = null,
 
-    public static function register(string $name, Email $email, HashedPassword $password): self
-    {
-
-        $user = new self(
-            null,
-            $name,
-            $email,
-            $password,
-            true,
-            false
-        );
-        $user->record(new UserRegistered($email));
-
-        return $user;
-    }
-
-
-    private function record(BaseEvent $event): void
-    {
-        $this->events[] = $event;
+    ) {
     }
 
     /**
@@ -59,10 +42,11 @@ final class User
      * @throws EmailNotVerifiedException
      * @throws InvalidCredentialsException
      * @throws LoginNotAllowedThisTimeException
+     * @throws \DateMalformedStringException
      */
-    public function login(string $plain): void
+    public function login(string $plain, ?DateTimeImmutable $now = null): void
     {
-        if (!$this->verifyLoginTime()) {
+        if (!$this->verifyLoginTime($now)) {
             // fix
             $this->record(new LoginAttemptedOutsideAllowedTime($this->email()));
 
@@ -82,18 +66,68 @@ final class User
 
     }
 
-    protected function verifyLoginTime(): bool
+    /**
+     * @throws \DateMalformedStringException
+     */
+    protected function verifyLoginTime(?DateTimeImmutable $now = null): bool
     {
-        // fix:
-        $now = now()->hour;
+        $now = $now?->format('H') ?? new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'))->format('H');
         $start = (int) new  \DateTime('08:00')->format('H');
-        $end = (int) new  \DateTime('14:00')->format('H');
+        $end = (int) new  \DateTime('18:00')->format('H');
         return ($now >= $start && $now <= $end);
+    }
+
+    private function record(BaseEvent $event): void
+    {
+        $this->events[] = $event;
     }
 
     public function email(): Email
     {
         return $this->email;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->isEmailVerified;
+    }
+
+    /**
+     * @return Role[]|null
+     */
+    public function roles(): ?array
+    {
+        return $this->roles;
+    }
+
+    public function id(): ?UserId
+    {
+        return $this->id;
+    }
+
+    /**
+     * Check if user has any of listed roles
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        return array_any($roles, $this->roles);
+    }
+
+    /**
+     * Check if user has all listed roles
+     */
+    public function hasAllRoles(array $roles): bool
+    {
+        return array_all($roles, $this->roles);
+    }
+
+    /**
+     * Get all roles for user
+     */
+    public function getRoleNames()
+    {
+        $this->loadMissing('roles');
+        return $this->roles->pluck('auth_code');
     }
 
     // ---Getters---
@@ -105,9 +139,86 @@ final class User
         return $events;
     }
 
-    public function id(): ?UserId
+    public function password(): HashedPassword
     {
-        return $this->id;
+        return $this->password;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function can(string $permission): bool
+    {
+        if (in_array($permission, $this->permissions)) {
+            return true;
+        }
+
+        if (!empty($this->roles)) {
+            foreach ($this->roles as $role) {
+                if ($role->hasPermissionTo($permission)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function hasPermissionTo(Permission $permission): bool
+    {
+        return in_array($permission, $this->permissions());
+    }
+
+    /**
+     * @return Permission[]|null
+     */
+    public function permissions(): ?array
+    {
+        return $this->permissions;
+    }
+
+    public function hasDirectPermission(string $permission): bool
+    {
+        return in_array($permission, $this->permissions());
+    }
+
+    public function getAllPermissions(): array
+    {
+        $permissions = $this->permissions();
+
+        foreach ($this->roles as $role) {
+            foreach ($role->permissions() as $permission) {
+                $permissions[] = $permission;
+            }
+        }
+        return array_values(array_unique($permissions));
+    }
+
+    public function syncRoles(array $roles): void
+    {
+        // Remove old ones not in new set
+        foreach ($this->roles as $existing) {
+            if (!in_array($existing, $roles, true)) {
+                $this->revokeRole(($existing));
+            }
+        }
+
+        // Add new ones not already present
+        foreach ($roles as $role) {
+            if (!$this->hasRole($role)) {
+                $this->assignRole($role);
+            }
+        }
+    }
+
+    /**
+     * Remove role from user
+     */
+    public function revokeRole(Role $role): void
+    {
+        $this->roles = array_filter(
+            $this->roles, fn($roleName) => $roleName->name() !== $role->name());
     }
 
     public function name(): string
@@ -115,20 +226,54 @@ final class User
         return $this->name;
     }
 
-    public function password(): HashedPassword
+    /**
+     * Check if user has role.
+     */
+    public function hasRole(Role $role): bool
     {
-        return $this->password;
+        return in_array($role, $this->roles);
     }
 
-//    public function role(): ?array {return $this->roles;}
-
-    public function isActive(): bool
+    public function assignRole(Role $role): void
     {
-        return $this->isActive;
+        if ($this->hasRole($role)) {
+            return;
+        }
+        $this->roles[] = $role;
     }
 
-    public function isEmailVerified(): bool
+    public function syncPermissions(array $permissions): void
     {
-        return $this->isEmailVerified;
+        // Remove old ones not in new set
+        foreach ($this->permissions as $existing) {
+            if (!in_array($existing, $permissions, true)) {
+                $this->revokePermissionTo(($existing));
+            }
+        }
+
+        // Add new ones not already present
+        foreach ($permissions as $permission) {
+            if (!$this->hasPermissionTo($permission)) {
+                $this->givePermissionTo($permission);
+            }
+        }
     }
+
+    public function revokePermissionTo(Permission $permission): void
+    {
+        $this->permissions = array_filter(
+            $this->permissions,
+            fn($perm) => $perm->name() !== $permission->name()
+        );
+    }
+
+    public function givePermissionTo(Permission $permission): void
+    {
+        if ($this->hasPermissionTo($permission)) {
+            return;
+        }
+
+        $this->permissions[] = $permission;
+    }
+
 }

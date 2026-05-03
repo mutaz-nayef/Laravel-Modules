@@ -11,6 +11,8 @@ use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
 use Modules\Authentication\Domain\ValueObjects\Email;
+use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
+use Modules\Authorization\Domain\Entities\Permission;
 
 
 class LoginUserAction
@@ -18,6 +20,7 @@ class LoginUserAction
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
         private readonly TokenIssuerInterface $tokenIssuer,
+        private readonly RoleRepositoryInterface $roleRepository,
     ) {
     }
 
@@ -39,11 +42,12 @@ class LoginUserAction
 
         #Fix:
         // load the role for user
-//        $role = $this->roleRepository->findByUserId($user->id());
-//        if($role)
-//        {
-//           $user->assignRole($role);
-//        }
+        $roles = $this->roleRepository->findByUserId($user->id());
+        if ($roles) {
+            foreach ($roles as $role) {
+                $user->assignRole($role);
+            }
+        }
 
         // generate token
         $token = $this->tokenIssuer->issue($user->id());
@@ -55,8 +59,11 @@ class LoginUserAction
             email: $user->email(),
             token: $token->plainText(),
             tokenType: 'Bearer',
-            roleName: 'guest',
-            permissions: []
+            roles: $user->roles(),
+            permissions: array_map(
+                fn(Permission $p) => $p->name(),
+                $user?->permissions() ?? []
+            ),
         );
 
     }
