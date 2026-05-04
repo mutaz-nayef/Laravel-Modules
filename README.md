@@ -1,58 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
 </p>
 
-## About Laravel
+<h1 align="center">Laravel Modules</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+Modular Laravel application with API authentication using Sanctum
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 About The Project
 
-## Learning Laravel
+This is a Laravel-based application built using a **modular architecture** with an integrated **authentication system**.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The project focuses on organizing code into reusable modules while providing a secure and scalable foundation for
+building modern web applications.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🔐 Authentication Features
 
-## Agentic Development
+The project currently includes API authentication using Laravel Sanctum:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+* User Registration
+* User Login
+* User Logout
+* Password Reset
+* Email Verification
+
+---
+
+## 🧩 Modular Structure
+
+The application is structured into modules to improve scalability and maintainability.
+Each module built in Domain Driven Design approach
+---
+
+## ⚙️ Running the Project
+
+This is a standard Laravel project.
+
+If you already have a local environment that supports Laravel (PHP, Composer, MySQL, etc.), you can run it directly on
+your machine.
+
+Follow these steps to set up and run the Laravel project locally:
+
+1. Clone the repository
+
+````
+git clone --branch=auth https://github.com/mutaz-nayef/modules-api
+cd your-repo
+````
+
+2. Install dependencies
+
+````
+composer install
+````
+
+3. Setup environment
+
+````
+cp .env.example .env
+php artisan key:generate
+````
+
+4. Configure database
+
+Edit the .env file and update your database credentials:
+
+````
+DB_DATABASE=your_db
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+````
+
+5. Run migrations
+
+````
+php artisan migrate --seed
+````
+
+6. Start the server
+
+````
+php artisan serve
+````
+
+Now open your browser at:
+http://127.0.0.1:8000
+
+If not, you can use my Docker setup for Laravel projects:
+
+👉 https://github.com/mutaz-nayef/laravel-docker
+
+---
+
+## 🐳 Docker (Alternative Setup)
+
+Using Docker:
+
+1. Clone the repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/mutaz-nayef/laravel-docker src
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+2. run this command
 
-## Contributing
+```
+docker compose up -d --build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. migrate tables and seed
 
-## Code of Conduct
+```
+docker compose exec app php artisan migrate:fresh --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open your browser at:
 
-## Security Vulnerabilities
+http://localhost:8085
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+and access to database, phpmyadmin
+http://localhost:8086
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📄 License
+
+This project is open-sourced under the MIT license.
