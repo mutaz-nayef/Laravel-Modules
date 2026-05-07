@@ -5,6 +5,7 @@ namespace Modules\Authentication\Presentation\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Authentication\Application\Actions\SendEmailVerificationNotificationAction;
 use Modules\Authentication\Application\DTOs\Auth\Input\SendEmailVerificationInputDto;
+use Modules\Authentication\Presentation\Http\Requests\EmailVerificationRequest;
 use Modules\Shared\Domain\ValueObjects\UserId;
 use Modules\Shared\Presentation\Http\Controllers\BaseController;
 
@@ -31,7 +32,7 @@ class EmailVerificationController extends BaseController
         });
     }
 
-    public function verify(\Modules\Authentication\Presentation\Http\Requests\EmailVerificationRequest $request)
+    public function verify(EmailVerificationRequest $request)
     {
         return $this->handle(function () use ($request) {
             $request->fulfill();

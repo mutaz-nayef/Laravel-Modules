@@ -5,6 +5,7 @@ namespace Modules\Authorization\Infrastructure\Mappers;
 use Illuminate\Support\Collection;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\ValueObjects\PermissionId;
+use Modules\Authorization\Domain\ValueObjects\PolicyConditions;
 use Modules\Authorization\Infrastructure\Models\PermissionModel;
 
 class PermissionMapper
@@ -21,6 +22,11 @@ class PermissionMapper
             id: new PermissionId($model->id),
             name: $model->name,
             group: $model->group,
+            conditions: PolicyConditions::fromJson(
+                is_array($model->pivot->conditions)
+                    ? json_encode($model->pivot->conditions)
+                    : $model->pivot->conditions
+            ),
         );
     }
 }

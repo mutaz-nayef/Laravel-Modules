@@ -17,5 +17,12 @@ class UpdateRolePermissionRequest extends BaseFormRequest
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'remove.*.exists' => "The permission ':input' does not exist in the database.",
+        ];
+    }
+
 }
 

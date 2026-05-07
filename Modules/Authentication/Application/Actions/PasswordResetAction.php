@@ -20,12 +20,11 @@ class PasswordResetAction
 
     public function execute(PasswordResetInputDto $input): string
     {
-
         $email = new Email($input->email);
         $status = $this->passwordReset->reset(
             token: new IssuedToken($input->token),
             email: $email,
-            password: new HashedPassword($input->password),
+            password: HashedPassword::fromPlain($input->password),
         );
 
         if ($status) {

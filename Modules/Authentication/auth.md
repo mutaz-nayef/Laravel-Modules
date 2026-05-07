@@ -366,21 +366,18 @@ Authorization: Bearer {token}
     "status": 200
 }
 ```
-
 ---
 
 ## Conclusion
 
-This Authentication module provides a complete flow for user management, including registration, login, logout, password
-reset, and email verification.
+This Authentication module provides a complete flow for user management, including registration, login, logout, password reset, and email verification.
 
 To successfully integrate with this API:
 
 - Always store and send the `access_token` using the `Authorization: Bearer {token}` header for protected endpoints.
 - Follow the validation rules specified for each request body.
 - Handle error responses properly, especially validation and authentication errors.
-- Use the email-based flows (password reset and email verification) as designed—these rely on secure links sent to the
-  user and should not be constructed manually.
+- Use the email-based flows (password reset and email verification) as designed—these rely on secure links sent to the user and should not be constructed manually.
 
 ---
 

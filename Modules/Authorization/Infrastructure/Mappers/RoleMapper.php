@@ -13,7 +13,6 @@ class RoleMapper
 
     public static function toDomainEntity(RoleModel|Collection $model): Role|array
     {
-
         if ($model instanceof Collection) {
             return $model
                 ->map(fn(RoleModel $role) => self::toDomainEntity($role))

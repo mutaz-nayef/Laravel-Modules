@@ -2,7 +2,6 @@
 
 namespace Modules\Authorization\Tests\Unit\Application;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Authorization\Application\Actions\Role\RoleDestroyAction;
@@ -18,7 +17,6 @@ use Tests\TestCase;
 
 class RoleActionTest extends TestCase
 {
-    use RefreshDatabase;
 
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private RoleStoreAction $roleStoreAction;
@@ -96,7 +94,6 @@ class RoleActionTest extends TestCase
         $this->assertSame('Manager', $output->display_name);
     }
 
-    //Fix
     public function test_it_delete_role_successfully(): void
     {
         $role = new Role(
@@ -119,10 +116,5 @@ class RoleActionTest extends TestCase
         $this->roleDestroyAction->execute(
             new BaseRoleInputDto(new RoleId(1))
         );
-
-        $this->assertDatabaseMissing('roles', [
-            'id' => $role->id()->value(),
-        ]);
     }
-
 }

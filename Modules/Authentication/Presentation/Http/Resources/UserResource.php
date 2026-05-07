@@ -4,9 +4,9 @@ namespace Modules\Authentication\Presentation\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Application\DTOs\Output\UserOutputDto;
 use Modules\Authorization\Application\DTOs\PermissionDto;
-use Modules\Authorization\Application\DTOs\RoleOutputDto;
 use Modules\Authorization\Presentation\Http\Resources\PermissionResource;
 use Modules\Authorization\Presentation\Http\Resources\RoleResource;
 
@@ -25,17 +25,15 @@ class UserResource extends JsonResource
             'id' => $this->output->id->value(),
             'name' => $this->output->name,
             'email' => $this->output->email,
-            $this->mergeWhen($request->routeIs('users.roles.*'), [
-                'roles' => RoleResource::collection(array_map(
-                    fn($role) => new RoleOutputDto(
-                        id: $role->id(),
-                        name: $role->name(),
-                        display_name: $role->displayName(),
-                        permissions: $role->permissions(),
-                    ),
-                    $this->output->roles
-                )),
-            ]),
+            'roles' => RoleResource::collection(array_map(
+                fn($role) => new RoleOutputDto(
+                    id: $role->id(),
+                    name: $role->name(),
+                    display_name: $role->displayName(),
+                    permissions: $role->permissions(),
+                ),
+                $this->output->roles
+            )),
             'permissions' => PermissionResource::collection(array_map(
                 fn($perm) => new PermissionDto(
                     id: $perm->id(),

@@ -54,7 +54,7 @@ class RoleController extends BaseController
                 )
             );
             return [
-                'message' => 'RoleModel Created.',
+                'message' => 'Role Created.',
                 'data' => new RoleResource($role)
             ];
         });

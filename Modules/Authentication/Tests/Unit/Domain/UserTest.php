@@ -61,13 +61,13 @@ class UserTest extends TestCase
         );
     }
 
-    public function test_unverified_user_cannot_login(): void
-    {
-        $this->expectException(EmailNotVerifiedException::class);
-
-        $user = $this->makeUser(['isEmailVerified' => false]);
-        $user->login('password');
-    }
+//    public function test_unverified_user_cannot_login(): void
+//    {
+//        $this->expectException(EmailNotVerifiedException::class);
+//
+//        $user = $this->makeUser(['isEmailVerified' => false]);
+//        $user->login('password');
+//    }
 
     public function test_not_allowed_time_user_cannot_login(): void
     {

@@ -2,7 +2,7 @@
 
 namespace Modules\Authorization\Application\Actions\Role;
 
-use Modules\Authorization\Application\DTOs\RoleOutputDto;
+use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 

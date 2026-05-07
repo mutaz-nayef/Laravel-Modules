@@ -3,6 +3,7 @@
 namespace Modules\Authorization\Domain\Entities;
 
 use Modules\Authorization\Domain\ValueObjects\PermissionId;
+use Modules\Authorization\Domain\ValueObjects\PolicyConditions;
 
 final class Permission
 {
@@ -11,7 +12,7 @@ final class Permission
         private readonly ?PermissionId $id,
         private readonly string $name,
         private readonly string $group,
-
+        private readonly ?PolicyConditions $conditions = null,
     ) {
     }
 
@@ -32,5 +33,9 @@ final class Permission
         return $this->id;
     }
 
+    public function conditions(): PolicyConditions
+    {
+        return $this->conditions;
+    }
 
 }

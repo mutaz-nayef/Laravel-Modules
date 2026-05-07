@@ -89,7 +89,7 @@ class PermissionController extends BaseController
             );
 
             return [
-                'message' => 'PermissionModel updated.',
+                'message' => 'Permission updated.',
                 'data' => new PermissionResource($permission)
             ];
         });

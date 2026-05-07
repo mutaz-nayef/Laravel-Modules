@@ -96,7 +96,7 @@ class RolePermissionController extends BaseController
                 )
             );
             return [
-                'message' => 'Role delete permission successfully.',
+                'message' => 'Role deleted permission successfully.',
             ];
         });
     }

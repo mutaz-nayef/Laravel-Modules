@@ -39,7 +39,7 @@ class RolePermissionDestroyAction
             throw new InvalidArgumentException('Role does not has permission', 404);
         }
 
-        $role->revokePermissionTo($permission->name());
+        $role->revokePermissionTo($permission);
         $this->roleRepository->savePermissions($role);
     }
 }

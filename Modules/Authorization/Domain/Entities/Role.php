@@ -69,11 +69,14 @@ final class Role
         $this->permissions[] = $permission;
     }
 
-
-    public function findPermission(string $permission): ?Permission
+    /**
+     * Retrieve the full Permission entity (including conditions).
+     * Used by the PolicyEngine for ABAC evaluation.
+     */
+    public function findPermission(string $permissionName): ?Permission
     {
-        foreach ($this->permissions() as $permission) {
-            if ($permission->name() === $permission) {
+        foreach ($this->permissions as $permission) {
+            if ($permission->name() === $permissionName) {
                 return $permission;
             }
         }

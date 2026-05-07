@@ -24,7 +24,8 @@ interface PermissionRepositoryInterface
 
     public function delete(PermissionId $permissionId): void;
 
-//    public function exists(Role $role, $): bool;
+    /** Find a single permission by its name for a given user (via their role). */
+    public function findForUser(int $userId, string $permissionName): ?Permission;
 
 }
 

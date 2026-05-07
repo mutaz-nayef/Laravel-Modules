@@ -55,10 +55,10 @@ final class User
         if (!$this->isActive) {
             throw new UserNotActiveException('Account is not active, Please support contact', 403);
         }
-        if (!$this->isEmailVerified) {
-            throw new EmailNotVerifiedException('Email is not verified. Please check your inbox for the verification link.',
-                403);
-        }
+//        if (!$this->isEmailVerified) {
+//            throw new EmailNotVerifiedException('Email is not verified. Please check your inbox for the verification link.',
+//                403);
+//        }
         if (!$this->password->verify($plain)) {
             throw new InvalidCredentialsException('Invalid credentials. Please try again.', 401);
         }

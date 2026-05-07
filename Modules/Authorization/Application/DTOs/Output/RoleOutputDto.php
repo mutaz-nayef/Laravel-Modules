@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authorization\Application\DTOs;
+namespace Modules\Authorization\Application\DTOs\Output;
 
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\ValueObjects\RoleId;

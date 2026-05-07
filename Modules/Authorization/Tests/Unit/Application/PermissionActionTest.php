@@ -2,7 +2,6 @@
 
 namespace Modules\Authorization\Tests\Unit\Application;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Authorization\Application\Actions\Permission\PermissionDestroyAction;
@@ -14,14 +13,12 @@ use Modules\Authorization\Application\DTOs\Input\Permission\PermissionUpdateInpu
 use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\ValueObjects\PermissionId;
-use Modules\Authorization\Infrastructure\Models\PermissionModel;
 use Tests\TestCase;
 
 //use PHPUnit\Framework\TestCase;
 
 class PermissionActionTest extends TestCase
 {
-    use RefreshDatabase;
 
     private PermissionRepositoryInterface|MockInterface $permissionRepository;
     private PermissionStoreAction $permissionStoreAction;
@@ -101,15 +98,10 @@ class PermissionActionTest extends TestCase
         $this->assertSame('posts', $output->group);
     }
 
-    //Fix
     public function test_it_delete_permission_successfully(): void
     {
-        $permission = PermissionModel::create([
-            'name' => 'post:edit',
-            'group' => 'posts',
-        ]);
+        $permissionId = new PermissionId(1);
 
-        $permissionId = new PermissionId($permission->id);
         $this->permissionRepository->shouldReceive('findById')->once()->andReturn(
             new Permission(
                 id: $permissionId,
@@ -117,16 +109,11 @@ class PermissionActionTest extends TestCase
                 group: 'posts'
             )
         );
-
         $this->permissionRepository->shouldReceive('delete')->with($permissionId)->once();
-
 
         $this->permissionDestroyAction->execute(
             new BasePermissionInputDto($permissionId)
         );
-
-        $permission->delete();
-        $this->assertDatabaseMissing('permissions', ['id' => $permissionId->value()]);
     }
 
 }

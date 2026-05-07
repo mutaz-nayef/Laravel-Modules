@@ -3,7 +3,7 @@
 namespace Modules\Authorization\Application\Actions\RolePermission;
 
 use Modules\Authorization\Application\DTOs\Input\RolePermission\RolePermissionInputDto;
-use Modules\Authorization\Application\DTOs\RoleOutputDto;
+use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Exceptions\PermissionNotFoundException;

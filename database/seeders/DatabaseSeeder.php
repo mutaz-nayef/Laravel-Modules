@@ -28,6 +28,12 @@ class DatabaseSeeder extends Seeder
         ]);
         $user->roles()->attach($adminRole);
 
+        $editorRole = RoleModel::where('name', 'editor')->first();
+        $editor = UserModel::factory()->create([
+            'name' => 'editor',
+            'email' => 'editor@example.com',
+        ]);
+        $editor->roles()->attach($editorRole);
 
     }
 }

@@ -5,7 +5,7 @@ namespace Modules\Authentication\Presentation\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Authentication\Application\DTOs\Auth\Output\AuthOutputDto;
-use Modules\Authorization\Application\DTOs\RoleOutputDto;
+use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Presentation\Http\Resources\RoleResource;
 
 class AuthResource extends JsonResource

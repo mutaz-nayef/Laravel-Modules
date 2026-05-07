@@ -12,7 +12,7 @@ class RouteLinkTest extends TestCase
 
     public function test_page_found()
     {
-        $response = $this->getJson('api/test');
+        $response = $this->getJson('api/auth');
         $response->assertOk();
         $response->assertStatus(200);
     }

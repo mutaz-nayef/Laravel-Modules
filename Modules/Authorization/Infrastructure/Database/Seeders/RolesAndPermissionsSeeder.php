@@ -17,47 +17,85 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // --- Permissions ---
         $permissionsData = [
+            ['name' => 'roles:view', 'group' => 'roles'],
+            ['name' => 'roles:create', 'group' => 'roles'],
+            ['name' => 'roles:edit', 'group' => 'roles'],
+            ['name' => 'roles:delete', 'group' => 'roles'],
+            ['name' => 'permissions:view', 'group' => 'permissions'],
+            ['name' => 'permissions:create', 'group' => 'permissions'],
+            ['name' => 'permissions:edit', 'group' => 'permissions'],
+            ['name' => 'permissions:delete', 'group' => 'permissions'],
+            ['name' => 'users:view', 'group' => 'users'],
+            ['name' => 'users:manage', 'group' => 'users'],
+            ['name' => 'home:view', 'group' => 'home'],
             ['name' => 'posts:view', 'group' => 'posts'],
             ['name' => 'posts:create', 'group' => 'posts'],
             ['name' => 'posts:edit', 'group' => 'posts'],
             ['name' => 'posts:delete', 'group' => 'posts'],
-            ['name' => 'users:view', 'group' => 'users'],
-            ['name' => 'users:manage', 'group' => 'users'],
-            ['name' => 'home:view', 'group' => 'home'],
         ];
         $permissions = collect($permissionsData)
             ->map(fn($p) => PermissionModel::firstOrCreate(['name' => $p['name']], $p));
 
         $byName = $permissions->keyBy('name');
 
-        // --- Admin role: all permissions, no conditions ---
-
+        // --- ADMIN role: all permissions, no conditions ---
         $admin = RoleModel::firstOrCreate([
             'name' => 'admin',
             'display_name' => 'Administrator'
         ]);
 
         $admin->permissions()->sync(
-            $permissions->pluck('id')->toArray()
+            $permissions->mapWithKeys(fn($p) => [$p->id => ['conditions' => null]])->toArray()
         );
-        
-        // --- Editor role: can view all posts, but can only edit/delete their OWN posts ---
+
+        // --- EDITOR role: can view all fields but can only write limited fields ---
+        // --- Can only edit/delete posts that they OWN
         $editor = RoleModel::firstOrCreate([
             'name' => 'editor',
             'display_name' => 'Editor'
         ]);
-
-
         $editor->permissions()->sync([
-            $byName['posts:view']->id,
-            $byName['posts:create']->id,
-            $byName['posts:edit']->id,
-            $byName['posts:delete']->id,
+            // View: can read most fields, but NOT internal_notes or cost
+            $byName['posts:view']->id => [
+                'conditions' => json_encode([
+                    'readable_fields' => ['id', 'title', 'body', 'status', 'published_at', 'user_id'],
+                ]),
+            ],
+
+            // Create: can only fill in title and body (not status, published_at, cost)
+            $byName['posts:create']->id => [
+                'conditions' => json_encode([
+                    'writable_fields' => ['title', 'body'],
+                ]),
+            ],
+            // Edit: owner only, can only write title and body
+            $byName['posts:edit']->id => [
+                'conditions' => json_encode([
+                    'owner_only' => true,
+                    'readable_fields' => ['id', 'title', 'body', 'status', 'published_at', 'user_id'],
+                    'writable_fields' => ['title', 'body'],
+                ]),
+            ],
+            // Delete: owner only, no field restrictions needed
+            $byName['posts:delete']->id => [
+                'conditions' => json_encode([
+                    'owner_only' => true,
+                ]),
+            ],
         ]);
 
-//         --- Viewer role: read-only, only published posts ---
+
+        // VIEWER — read-only, only published posts, minimal fields
         $viewer = RoleModel::firstOrCreate(['name' => 'viewer'], ['display_name' => 'Viewer']);
-        $viewer->permissions()->sync([$byName['posts:view']->id]);
+        $viewer->permissions()->sync([
+            $byName['posts:view']->id => [
+                'conditions' => json_encode([
+                    'allowed_statuses' => ['published'],
+                    'readable_fields' => ['id', 'title', 'body', 'published_at'],
+                    // no writable_fields → viewer cannot write at all
+                ]),
+            ],
+        ]);
 
         // --- User role: ---
 
@@ -66,8 +104,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'display_name' => 'User'
         ]);
 
-        $normalUser->permissions()->sync([$byName['home:view']->id]);
-
-
+        $normalUser->permissions()->sync([
+            $byName['posts:view']->id => ['conditions' => null],
+            $byName['home:view']->id => ['conditions' => null]
+        ]);
     }
 }

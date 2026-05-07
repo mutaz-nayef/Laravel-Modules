@@ -3,7 +3,7 @@
 namespace Modules\Authorization\Application\Actions\Role;
 
 use Modules\Authorization\Application\DTOs\Input\Role\RoleUpdateInputDto;
-use Modules\Authorization\Application\DTOs\RoleOutputDto;
+use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;

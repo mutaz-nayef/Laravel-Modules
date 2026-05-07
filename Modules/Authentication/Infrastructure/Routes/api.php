@@ -8,8 +8,8 @@ use Modules\Authentication\Presentation\Http\Controllers\PasswordResetController
 use Modules\Authentication\Presentation\Http\Middleware\EnsureEmailIsVerified;
 use Modules\Authentication\Presentation\Http\Middleware\EnsureUserCanStayLoggedIn;
 
-Route::get('/test', function () {
-    return 'test';
+Route::get('/auth', function () {
+    return response()->json('Welcome to the authentication module.');
 });
 
 Route::post('/login', [AuthController::class, 'login']);
