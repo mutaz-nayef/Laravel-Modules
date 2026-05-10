@@ -31,6 +31,7 @@ class LaravelSanctumToken implements TokenIssuerInterface
 
         $user = $token->tokenable;
 
+
         // delete old access tokens
         $user->tokens()
             ->where('name', 'access-token')
@@ -50,16 +51,13 @@ class LaravelSanctumToken implements TokenIssuerInterface
 
         $user = UserModel::findOrFail($userId->value());
 
-        $user->tokens()->where('name', 'access_token')->delete();
-
-        $accessToken = $user->createToken(
+        $token = $user->createToken(
             name: $name,
             // fix $user->permissions() ?? null,
             abilities: ['*'],
-            expiresAt: now()->addMinutes($expiresAtInMinutes ?? 1),
+            expiresAt: now()->addMinutes((int) $expiresAtInMinutes ?? 600),
         )->plainTextToken;
-
-        return new IssuedToken($accessToken);
+        return new IssuedToken($token);
     }
 
     public function revoke(UserId $userId): void

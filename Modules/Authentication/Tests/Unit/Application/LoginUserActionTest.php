@@ -56,12 +56,18 @@ class LoginUserActionTest extends BaseTestCase
 
         $this->userRepository->shouldReceive('findByEmail')->once()->andReturn($user);
         $this->roleRepository->shouldReceive('findByUserId')->once()->andReturn([$role]);
-        $this->tokenIssuer->shouldReceive('issue')->once()->andReturn(new IssuedToken('token-abc'));
-
+        $this->tokenIssuer
+            ->shouldReceive('issue')
+            ->twice()
+            ->andReturn(
+                new IssuedToken('access_token'),
+                new IssuedToken('refresh_token')
+            );
         $output = $this->action->execute(new LoginInputDTO('john@example.com', 'password'));
 
         $this->assertSame('john@example.com', $output->email);
-        $this->assertSame('token-abc', $output->token);
+        $this->assertSame('access_token', $output->accessToken);
+        $this->assertSame('refresh_token', $output->refreshToken);
         $this->assertSame('Bearer', $output->tokenType);
         $this->assertSame([$role], $output->roles);
     }

@@ -66,13 +66,20 @@ class RegisterUserActionTest extends BaseTestCase
 
         $this->emailVerification->shouldReceive('sendEmailVerification')->once()->andReturn(null);
 
-        $this->tokenIssuer->shouldReceive('issue')->once()->andReturn(new IssuedToken('token-abc'));
+        $this->tokenIssuer
+            ->shouldReceive('issue')
+            ->twice()
+            ->andReturn(
+                new IssuedToken('access_token'),
+                new IssuedToken('refresh_token')
+            );
 
         $output = $this->action->execute(new RegisterInputDto('user test', 'john@example.com', 'password'));
 
 
         $this->assertSame('john@example.com', $output->email);
-        $this->assertSame('token-abc', $output->token);
+        $this->assertSame('access_token', $output->accessToken);
+        $this->assertSame('refresh_token', $output->refreshToken);
         $this->assertSame('Bearer', $output->tokenType);
 //
 //        $this->assertEqualsCanonicalizing(

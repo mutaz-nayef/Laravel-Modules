@@ -72,7 +72,7 @@ class AuthController extends BaseController
             return [
                 'message' => 'Authenticated, We Sent you email to verify you email!',
                 'data' => [
-                    'access_token' => $access_token
+                    'access_token' => $access_token->plainText()
                 ]
             ];
         });
