@@ -17,21 +17,5 @@ class RoleOutputDto
         public array $permissions,
     ) {
     }
-
-
-    public static function fromArray(array $data): static
-    {
-        $permissions = array_map(
-            fn(array $p) => PermissionDto::fromArray($p),
-            $data['permissions'] ?? []
-        );
-        return new static(
-            new RoleId($data['id']),
-            $data['name'],
-            $data['display_name'],
-            $permissions,
-        );
-    }
-
-
+    
 }

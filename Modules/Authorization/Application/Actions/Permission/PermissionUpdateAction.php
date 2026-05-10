@@ -3,7 +3,7 @@
 namespace Modules\Authorization\Application\Actions\Permission;
 
 use Modules\Authorization\Application\DTOs\Input\Permission\PermissionUpdateInputDto;
-use Modules\Authorization\Application\DTOs\PermissionDto;
+use Modules\Authorization\Application\DTOs\Output\PermissionDto;
 use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Exceptions\PermissionNotFoundException;
@@ -24,7 +24,7 @@ class PermissionUpdateAction
         $permission = $this->permissionRepository->findById($input->permissionId);
 
         if (!$permission) {
-            throw new PermissionNotFoundException('PermissionModel not found', 404);
+            throw new PermissionNotFoundException('Permission not found', 404);
         }
 
         $permission = new Permission(

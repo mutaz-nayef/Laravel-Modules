@@ -3,7 +3,7 @@
 namespace Modules\Authorization\Presentation\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Authorization\Application\DTOs\PermissionDto;
+use Modules\Authorization\Application\DTOs\Output\PermissionDto;
 
 class PermissionResource extends JsonResource
 {

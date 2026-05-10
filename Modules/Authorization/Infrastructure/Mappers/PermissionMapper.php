@@ -23,9 +23,9 @@ class PermissionMapper
             name: $model->name,
             group: $model->group,
             conditions: PolicyConditions::fromJson(
-                is_array($model->pivot->conditions)
-                    ? json_encode($model->pivot->conditions)
-                    : $model->pivot->conditions
+                is_array($model->pivot?->conditions)
+                    ? json_encode($model->pivot?->conditions)
+                    : $model->pivot?->conditions
             ),
         );
     }

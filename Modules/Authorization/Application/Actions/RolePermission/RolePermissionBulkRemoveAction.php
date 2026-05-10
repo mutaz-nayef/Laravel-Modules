@@ -2,14 +2,15 @@
 
 namespace Modules\Authorization\Application\Actions\RolePermission;
 
-use Modules\Authorization\Application\DTOs\Input\RolePermission\RolePermissionPatchInputDto;
+use InvalidArgumentException;
+use Modules\Authorization\Application\DTOs\Input\RolePermission\RolePermissionInputDto;
 use Modules\Authorization\Application\DTOs\Output\RoleOutputDto;
 use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Exceptions\PermissionNotFoundException;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
 
-class RolePermissionPatchAction
+class RolePermissionBulkRemoveAction
 {
     public function __construct(
         protected RoleRepositoryInterface $roleRepository,
@@ -22,24 +23,25 @@ class RolePermissionPatchAction
      * @throws RoleNotFoundException
      * @throws PermissionNotFoundException
      */
-    public function execute(RolePermissionPatchInputDto $input): RoleOutputDto
+    public function execute(RolePermissionInputDto $input): RoleOutputDto
     {
-        $role = $this->roleRepository->findById($input->roleId);
+        $role = $this->roleRepository->findById($input->role);
         if (!$role) {
             throw new RoleNotFoundException('Role not found');
         }
 
-        $addPermissions = array_unique(array_map(fn($permission
-        ) => $this->permissionRepository->findByName($permission), $input->add));
+        $removePermissions = (array_map(fn($permission
+        ) => $this->permissionRepository->findByName($permission), $input->permissions));
 
-        $removePermissions = array_unique(array_map(fn($permission
-        ) => $this->permissionRepository->findByName($permission), $input->remove));
-
-        foreach ($addPermissions as $permission) {
-
-            $role->givePermissionTo($permission);
+        if (empty($removePermissions)) {
+            throw new PermissionNotFoundException("Permission not found", 404);
         }
+
+
         foreach ($removePermissions as $permission) {
+            if (!$role->hasPermissionTo($permission)) {
+                throw new InvalidArgumentException("Role does not has {$permission->name()} permission", 404);
+            }
             $role->revokePermissionTo($permission);
         }
 
@@ -49,7 +51,7 @@ class RolePermissionPatchAction
             id: $role->id(),
             name: $role->name(),
             display_name: $role->displayName(),
-            permissions: $role->permissions()
+            permissions: $role->permissions(),
         );
     }
 }

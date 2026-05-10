@@ -4,13 +4,12 @@ namespace Modules\Authorization\Presentation\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use Modules\Authorization\Application\Actions\RolePermission\RolePermissionBulkRemoveAction;
 use Modules\Authorization\Application\Actions\RolePermission\RolePermissionDestroyAction;
-use Modules\Authorization\Application\Actions\RolePermission\RolePermissionPatchAction;
 use Modules\Authorization\Application\Actions\RolePermission\RolePermissionStoreAction;
 use Modules\Authorization\Application\Actions\RolePermission\RolePermissionSyncAction;
 use Modules\Authorization\Application\DTOs\Input\RolePermission\RoleDestroyPermissionInputDto;
 use Modules\Authorization\Application\DTOs\Input\RolePermission\RolePermissionInputDto;
-use Modules\Authorization\Application\DTOs\Input\RolePermission\RolePermissionPatchInputDto;
 use Modules\Authorization\Domain\ValueObjects\PermissionId;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
 use Modules\Authorization\Presentation\Http\Requests\RolePermissions\BaseRolePermissionRequest;
@@ -24,7 +23,7 @@ class RolePermissionController extends BaseController
         private readonly RolePermissionStoreAction $rolePermissionStoreAction,
         private readonly RolePermissionDestroyAction $rolePermissionDestroyAction,
         private readonly RolePermissionSyncAction $rolePermissionSyncAction,
-        private readonly RolePermissionPatchAction $rolePermissionPatchAction,
+        private readonly RolePermissionBulkRemoveAction $rolePermissionBulkRemoveAction,
     ) {
     }
 
@@ -43,7 +42,7 @@ class RolePermissionController extends BaseController
                 )
             );
             return [
-                'message' => 'Role stored permissions successfully.',
+                'message' => 'Permissions '.implode(', ', $request->input('permissions')).' stored successfully.',
 
                 'data' => new RoleResource($roleWithPermissions),
             ];
@@ -60,29 +59,26 @@ class RolePermissionController extends BaseController
                     permissions: $request->input('permissions', []),
                 ));
             return [
-                'message' => 'Role permission synced',
+                'message' => 'Permission: '.implode(', ', $request->input('permissions')).' synced successfully.',
                 'data' => new RoleResource($role),
             ];
         });
     }
 
 
-    public function update(UpdateRolePermissionRequest $request)
+    public function bulkDelete(BaseRolePermissionRequest $request)
     {
         return $this->handle(function () use ($request) {
 
-            $role = $this->rolePermissionPatchAction->execute(
-                new RolePermissionPatchInputDto(
-                    roleId: new RoleId($request->route('role')),
-                    add: $request->input('add', []),
-                    remove: $request->input('remove', []),
-                )
-            );
+            $output = $this->rolePermissionBulkRemoveAction->execute(
+                new RolePermissionInputDto(
+                    role: new RoleId($request->route('role')),
+                    permissions: $request->input('permissions', []),
+                ));
             return [
-                'message' => 'PermissionModel updated.',
-                'data' => new RoleResource($role),
+                'message' => 'Permissions '.implode(', ', $request->input('permissions')).' removed successfully.',
+                'data' => new RoleResource($output),
             ];
-
         });
     }
 

@@ -15,7 +15,9 @@ class LoginTest extends TestCase
 
     public function test_user_can_login_and_receive_token_with_permissions()
     {
+
         $this->seed(RolesAndPermissionsSeeder::class);
+
         $role = RoleModel::where('name', 'admin')->first();
 
         $user = UserModel::factory()->create(['password' => bcrypt('password')]);
@@ -44,7 +46,6 @@ class LoginTest extends TestCase
     {
 //        Event::fake();
 
-        $this->travelTo(now()->setHour(20)->setMinute(0)->setSecond(0));
         $user = UserModel::factory()->create(['password' => bcrypt('password')]);
 
         $response = $this->postJson('api/login', [
@@ -54,7 +55,6 @@ class LoginTest extends TestCase
 //        $response->assertStatus(403);
         $response->assertStatus(200);
 
-        $this->travelBack();
 
 //        Event::assertDispatched(LoginAttemptedOutsideAllowedTime::class, function ($event) {
 //            return $event->email === 'test@example.com';

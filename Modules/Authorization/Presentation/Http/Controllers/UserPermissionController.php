@@ -4,6 +4,7 @@ namespace Modules\Authorization\Presentation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Modules\Authentication\Presentation\Http\Resources\UserResource;
+use Modules\Authorization\Application\Actions\UserPermission\UserPermissionBulkRemoveAction;
 use Modules\Authorization\Application\Actions\UserPermission\UserPermissionDestroyAction;
 use Modules\Authorization\Application\Actions\UserPermission\UserPermissionGetAction;
 use Modules\Authorization\Application\Actions\UserPermission\UserPermissionStoreAction;
@@ -22,6 +23,7 @@ class UserPermissionController extends BaseController
     public function __construct(
         private readonly UserPermissionGetAction $userPermissionGetAction,
         private readonly UserPermissionStoreAction $userPermissionStoreAction,
+        private readonly UserPermissionBulkRemoveAction $userPermissionBulkRemoveAction,
         private readonly UserPermissionDestroyAction $userPermissionDestroyAction,
         private readonly UserPermissionSyncAction $userPermissionSyncAction,
     ) {
@@ -75,6 +77,22 @@ class UserPermissionController extends BaseController
         });
     }
 
+
+    public function bulkDelete(BaseUserPermissionsRequest $request)
+    {
+        return $this->handle(function () use ($request) {
+
+            $output = $this->userPermissionBulkRemoveAction->execute(
+                new UserPermissionInputDto(
+                    userId: new UserId($request->route('user')),
+                    permissions: $request->input('permissions', []),
+                ));
+            return [
+                'message' => 'Permissions '.implode(', ', $request->input('permissions')).' removed successfully.',
+                'data' => new UserResource($output),
+            ];
+        });
+    }
 
     public function destroy(Request $request)
     {

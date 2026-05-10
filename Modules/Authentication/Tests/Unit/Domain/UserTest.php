@@ -74,7 +74,7 @@ class UserTest extends TestCase
         $this->expectException(LoginNotAllowedThisTimeException::class);
 
         $user = $this->makeUser();
-        $user->login('password', new \DateTimeImmutable('20:00:00'));
+        $user->login('password', new \DateTimeImmutable('21:00:00'));
 
     }
 

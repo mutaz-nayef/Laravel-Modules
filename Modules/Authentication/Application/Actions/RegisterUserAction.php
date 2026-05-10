@@ -4,6 +4,7 @@ namespace Modules\Authentication\Application\Actions;
 
 use Modules\Authentication\Application\DTOs\Auth\Input\RegisterInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Output\AuthOutputDto;
+use Modules\Authentication\Domain\Contracts\EmailVerificationInterface;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
@@ -11,6 +12,7 @@ use Modules\Authentication\Domain\Exceptions\EmailAlreadyExistsException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
+use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
 
 class RegisterUserAction
@@ -19,6 +21,8 @@ class RegisterUserAction
         private readonly UserRepositoryInterface $userRepository,
         private readonly TokenIssuerInterface $tokenIssuer,
         private readonly RoleRepositoryInterface $roleRepository,
+        private readonly EmailVerificationInterface $emailVerification,
+
     ) {
     }
 
@@ -55,20 +59,28 @@ class RegisterUserAction
         $user->assignRole($roleUser);
         $user->assignRole($roleAdmin);
         $user = $this->userRepository->save($user);
-        //  $user = $this->userRepository->saveRoles($user);
-        // generate token
 
-        $token = $this->tokenIssuer->issue($user->id());
+        //  $user = $this->userRepository->saveRoles($user);
+
+        // generate tokens
+        $access_token = $this->tokenIssuer->issue($user->id(), 'access_token');
+        $refresh_token = $this->tokenIssuer->issue($user->id(), 'refresh_token', 60 * 24 * 30);
+
+        $this->emailVerification->sendEmailVerification($user->id());
 
         // return output dto
         return new AuthOutputDto(
             userId: $user->id()->value(),
             name: $user->name(),
             email: $user->email(),
-            token: $token->plainText(),
+            accessToken: $access_token->plainText(),
+            refreshToken: $refresh_token->plainText(),
             tokenType: 'Bearer',
             roles: $user->roles(),
-            permissions: $user->permissions(),
+            permissions: array_map(
+                fn(Permission $p) => $p->name(),
+                $user?->permissions() ?? []
+            ),
         );
     }
 }

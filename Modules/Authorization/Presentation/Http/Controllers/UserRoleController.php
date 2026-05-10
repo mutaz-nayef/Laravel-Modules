@@ -4,6 +4,7 @@ namespace Modules\Authorization\Presentation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Modules\Authentication\Presentation\Http\Resources\UserResource;
+use Modules\Authorization\Application\Actions\UserRole\UserRoleBulkRemoveAction;
 use Modules\Authorization\Application\Actions\UserRole\UserRoleDestroyAction;
 use Modules\Authorization\Application\Actions\UserRole\UserRoleGetAction;
 use Modules\Authorization\Application\Actions\UserRole\UserRoleStoreAction;
@@ -23,6 +24,7 @@ class UserRoleController extends BaseController
         private readonly UserRoleGetAction $userRoleGetAction,
         private readonly UserRoleStoreAction $userRoleStoreAction,
         private readonly UserRoleDestroyAction $userRoleDestroyAction,
+        private readonly UserRoleBulkRemoveAction $userRoleBulkRemoveAction,
         private readonly UserRoleSyncAction $userRoleSyncAction,
     ) {
     }
@@ -53,7 +55,7 @@ class UserRoleController extends BaseController
                 )
             );
             return [
-                'message' => 'User stored roles successfully.',
+                'message' => 'User stored roles '.implode(', ', $request->input('roles')).' successfully.',
                 'data' => new UserResource($userWithRoles),
             ];
         });
@@ -69,8 +71,24 @@ class UserRoleController extends BaseController
                     roles: $request->input('roles', []),
                 ));
             return [
-                'message' => 'User roles synced',
+                'message' => 'User roles '.implode(', ', $request->input('roles')).' synced successfully.',
                 'data' => new UserResource($user),
+            ];
+        });
+    }
+
+    public function bulkDelete(BaseUserRoleRequest $request)
+    {
+        return $this->handle(function () use ($request) {
+
+            $output = $this->userRoleBulkRemoveAction->execute(
+                new UserRolesInputDto(
+                    userId: new UserId($request->route('user')),
+                    roles: $request->input('roles', []),
+                ));
+            return [
+                'message' => 'Permissions '.implode(', ', $request->input('roles')).' removed successfully.',
+                'data' => new UserResource($output),
             ];
         });
     }

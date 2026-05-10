@@ -707,7 +707,7 @@ Authorization: Bearer {token}
         ]
     },
     "errors": "",
-    "message": "PermissionModel updated.",
+    "message": "Permission updated.",
     "status": 200
 }
 ```

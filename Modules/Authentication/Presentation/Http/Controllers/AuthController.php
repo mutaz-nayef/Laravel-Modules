@@ -4,12 +4,14 @@ namespace Modules\Authentication\Presentation\Http\Controllers;
 
 use Modules\Authentication\Application\Actions\LoginUserAction;
 use Modules\Authentication\Application\Actions\LogoutUserAction;
+use Modules\Authentication\Application\Actions\RefreshTokenAction;
 use Modules\Authentication\Application\Actions\RegisterUserAction;
 use Modules\Authentication\Application\DTOs\Auth\Input\loginInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\LogoutInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\RegisterInputDto;
 use Modules\Authentication\Presentation\Http\Requests\LoginRequest;
 use Modules\Authentication\Presentation\Http\Requests\LogoutRequest;
+use Modules\Authentication\Presentation\Http\Requests\RefreshTokenRequest;
 use Modules\Authentication\Presentation\Http\Requests\RegisterRequest;
 use Modules\Authentication\Presentation\Http\Resources\AuthResource;
 use Modules\Shared\Domain\ValueObjects\UserId;
@@ -21,6 +23,7 @@ class AuthController extends BaseController
         private readonly LoginUserAction $loginUserAction,
         private readonly LogoutUserAction $logoutUserAction,
         private readonly RegisterUserAction $registerUserAction,
+        private readonly RefreshTokenAction $refreshTokenAction,
     ) {
     }
 
@@ -54,8 +57,23 @@ class AuthController extends BaseController
             );
 
             return [
-                'message' => 'Authenticated',
+                'message' => 'Authenticated, We Sent you email to verify you email!',
                 'data' => new AuthResource($output)
+            ];
+        });
+    }
+
+    public function refreshToken(RefreshTokenRequest $request)
+    {
+        return $this->handle(function () use ($request) {
+
+            $access_token = $this->refreshTokenAction->execute($request->input('refresh_token'));
+
+            return [
+                'message' => 'Authenticated, We Sent you email to verify you email!',
+                'data' => [
+                    'access_token' => $access_token
+                ]
             ];
         });
     }

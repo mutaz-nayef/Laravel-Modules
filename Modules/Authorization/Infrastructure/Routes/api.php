@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Authentication\Presentation\Http\Middleware\EnsureEmailIsVerified;
-use Modules\Authentication\Presentation\Http\Middleware\EnsureUserCanStayLoggedIn;
 use Modules\Authorization\Presentation\Http\Controllers\PermissionController;
 use Modules\Authorization\Presentation\Http\Controllers\RoleController;
 use Modules\Authorization\Presentation\Http\Controllers\RolePermissionController;
@@ -13,18 +11,23 @@ Route::get('/test-authorization', function () {
     return 'test-authorization';
 });
 
+Route::middleware(['auth:sanctum', 'isVerified'])->group(function () {
 
-Route::middleware(['auth:sanctum', EnsureEmailIsVerified::class, EnsureUserCanStayLoggedIn::class])->group(function () {
+//'check.login.time'
 
-    Route::apiResource('roles', RoleController::class);
-    Route::apiResource('permissions', PermissionController::class);
-    Route::apiResource('users.roles', UserRoleController::class);
-    Route::apiResource('roles.permissions', RolePermissionController::class);
-    Route::apiResource('users.permissions', UserPermissionController::class);
-    Route::put('/users/{user}/roles', [UserRoleController::class, 'sync']);
-    Route::put('/users/{user}/permissions', [UserPermissionController::class, 'sync']);
-    Route::put('/roles/{role}/permissions', [RolePermissionController::class, 'sync']);
-    Route::patch('/roles/{role}/permissions', [RolePermissionController::class, 'update']);
+    Route::middleware('admin')->group(function () {
+        Route::apiResource('roles', RoleController::class);
+        Route::apiResource('permissions', PermissionController::class);
+        Route::apiResource('users.roles', UserRoleController::class);
+        Route::apiResource('roles.permissions', RolePermissionController::class);
+        Route::apiResource('users.permissions', UserPermissionController::class);
+        Route::put('/users/{user}/roles', [UserRoleController::class, 'sync']);
+        Route::put('/users/{user}/permissions', [UserPermissionController::class, 'sync']);
+        Route::put('/roles/{role}/permissions', [RolePermissionController::class, 'sync']);
+        Route::delete('/roles/{role}/permissions', [RolePermissionController::class, 'bulkDelete']);
+        Route::delete('/users/{user}/permissions', [UserPermissionController::class, 'bulkDelete']);
+        Route::delete('/users/{user}/roles', [UserRoleController::class, 'bulkDelete']);
+    });
 
     // posts:view — viewer can only see published, editor/admin can see all
     Route::get('/posts', function () {

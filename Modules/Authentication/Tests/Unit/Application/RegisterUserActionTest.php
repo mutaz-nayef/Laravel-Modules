@@ -7,6 +7,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Modules\Authentication\Application\Actions\RegisterUserAction;
 use Modules\Authentication\Application\DTOs\Auth\Input\RegisterInputDto;
+use Modules\Authentication\Domain\Contracts\EmailVerificationInterface;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
@@ -23,6 +24,7 @@ class RegisterUserActionTest extends BaseTestCase
     private UserRepositoryInterface|MockInterface $userRepository;
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private TokenIssuerInterface|MockInterface $tokenIssuer;
+    private EmailVerificationInterface|MockInterface $emailVerification;
 
     private RegisterUserAction $action;
 
@@ -31,11 +33,13 @@ class RegisterUserActionTest extends BaseTestCase
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->roleRepository = Mockery::mock(RoleRepositoryInterface::class);
         $this->tokenIssuer = Mockery::mock(TokenIssuerInterface::class);
+        $this->emailVerification = Mockery::mock(EmailVerificationInterface::class);
 
         $this->action = new RegisterUserAction(
             $this->userRepository,
             $this->tokenIssuer,
             $this->roleRepository,
+            $this->emailVerification
         );
     }
 
@@ -59,13 +63,9 @@ class RegisterUserActionTest extends BaseTestCase
         $this->roleRepository->shouldReceive('findByName')->with('user')->once()->andReturn($roleUser);
         $this->roleRepository->shouldReceive('findByName')->with('admin')->once()->andReturn($roleAdmin);
         $this->userRepository->shouldReceive('save')->with(Mockery::type(User::class))->once()->andReturn($user);
-//        $this->userRepository
-//            ->shouldReceive('save')
-//            ->once()
-//            ->with(Mockery::on(function ($user) {
-//                return true;
-//            }))
-//            ->andReturn($user);
+
+        $this->emailVerification->shouldReceive('sendEmailVerification')->once()->andReturn(null);
+
         $this->tokenIssuer->shouldReceive('issue')->once()->andReturn(new IssuedToken('token-abc'));
 
         $output = $this->action->execute(new RegisterInputDto('user test', 'john@example.com', 'password'));

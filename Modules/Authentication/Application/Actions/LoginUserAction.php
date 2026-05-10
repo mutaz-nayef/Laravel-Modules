@@ -25,10 +25,13 @@ class LoginUserAction
     }
 
     /**
+     * @param  LoginInputDto  $input
+     * @return AuthOutputDto
      * @throws EmailNotVerifiedException
+     * @throws InvalidCredentialsException
      * @throws LoginNotAllowedThisTimeException
      * @throws UserNotActiveException
-     * @throws InvalidCredentialsException
+     * @throws \DateMalformedStringException
      */
     public function execute(LoginInputDto $input): AuthOutputDto
     {
@@ -49,15 +52,17 @@ class LoginUserAction
             }
         }
 
-        // generate token
-        $token = $this->tokenIssuer->issue($user->id());
+        // generate tokens
+        $access_token = $this->tokenIssuer->issue($user->id(), 'access_token');
+        $refresh_token = $this->tokenIssuer->issue($user->id(), 'refresh_token', 60 * 24 * 30);
 
         // return output dto
         return new AuthOutputDto(
             userId: $user->id()->value(),
             name: $user->name(),
             email: $user->email(),
-            token: $token->plainText(),
+            accessToken: $access_token->plainText(),
+            refreshToken: $refresh_token->plainText(),
             tokenType: 'Bearer',
             roles: $user->roles(),
             permissions: array_map(

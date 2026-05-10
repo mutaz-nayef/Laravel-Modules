@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authorization\Application\DTOs;
+namespace Modules\Authorization\Application\DTOs\Output;
 
 use Modules\Authorization\Domain\ValueObjects\PermissionId;
 
@@ -12,6 +12,6 @@ class PermissionDto
         public string $group,
     ) {
     }
-    
+
 
 }

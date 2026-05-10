@@ -55,10 +55,7 @@ final class User
         if (!$this->isActive) {
             throw new UserNotActiveException('Account is not active, Please support contact', 403);
         }
-//        if (!$this->isEmailVerified) {
-//            throw new EmailNotVerifiedException('Email is not verified. Please check your inbox for the verification link.',
-//                403);
-//        }
+
         if (!$this->password->verify($plain)) {
             throw new InvalidCredentialsException('Invalid credentials. Please try again.', 401);
         }
@@ -69,11 +66,13 @@ final class User
     /**
      * @throws \DateMalformedStringException
      */
-    protected function verifyLoginTime(?DateTimeImmutable $now = null): bool
+    public function verifyLoginTime(?DateTimeImmutable $now): bool
     {
+
         $now = $now?->format('H') ?? new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'))->format('H');
-        $start = (int) new  \DateTime('08:00')->format('H');
-        $end = (int) new  \DateTime('18:00')->format('H');
+
+        $start = (int) new  \DateTime('8:00')->format('H');
+        $end = (int) new  \DateTime('20:00')->format('H');
         return ($now >= $start && $now <= $end);
     }
 

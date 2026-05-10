@@ -3,7 +3,7 @@
 namespace Modules\Authorization\Application\Actions\Permission;
 
 use Modules\Authorization\Application\DTOs\Input\Permission\PermissionStoreInputDto;
-use Modules\Authorization\Application\DTOs\PermissionDto;
+use Modules\Authorization\Application\DTOs\Output\PermissionDto;
 use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 
