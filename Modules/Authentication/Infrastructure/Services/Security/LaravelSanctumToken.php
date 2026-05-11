@@ -51,11 +51,14 @@ class LaravelSanctumToken implements TokenIssuerInterface
 
         $user = UserModel::findOrFail($userId->value());
 
+        $expiresAtInMinutes = $expiresAtInMinutes > 0
+            ? (int) $expiresAtInMinutes
+            : 600;
         $token = $user->createToken(
             name: $name,
             // fix $user->permissions() ?? null,
             abilities: ['*'],
-            expiresAt: now()->addMinutes((int) $expiresAtInMinutes ?? 600),
+            expiresAt: now()->addMinutes($expiresAtInMinutes),
         )->plainTextToken;
         return new IssuedToken($token);
     }

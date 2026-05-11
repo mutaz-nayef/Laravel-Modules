@@ -10,22 +10,4 @@ class PasswordResetInputDto
         public string $token,
     ) {
     }
-
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            email: $data['email'],
-            password: $data['password'],
-            token: $data['token'],
-        );
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'email' => $this->email,
-            'password' => $this->password,
-            'token' => $this->token,
-        ];
-    }
 }

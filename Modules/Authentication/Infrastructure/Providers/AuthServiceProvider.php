@@ -10,6 +10,7 @@ use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
 use Modules\Authentication\Domain\Contracts\PasswordVerifierInterface;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
+use Modules\Authentication\Infrastructure\Console\Commands\LogoutTimeCommand;
 use Modules\Authentication\Infrastructure\Models\UserModel;
 use Modules\Authentication\Infrastructure\Repositories\EloquentUserRepository;
 use Modules\Authentication\Infrastructure\Services\Security\LaravelEmailVerification;
@@ -17,12 +18,16 @@ use Modules\Authentication\Infrastructure\Services\Security\LaravelPasswordReset
 use Modules\Authentication\Infrastructure\Services\Security\LaravelSanctumToken;
 use Modules\Authentication\Infrastructure\Services\Security\PasswordHasherResolver;
 use Modules\Authentication\Infrastructure\Services\Security\PasswordVerifier;
+use Modules\Authentication\Presentation\Http\Middleware\CheckLoginTimeMiddleware;
+use Modules\Authentication\Presentation\Http\Middleware\EnsureEmailIsVerified;
 
 class AuthServiceProvider extends ServiceProvider
 
 {
     public function boot(): void
     {
+
+
         $this->app->register(EventServiceProvide::class);
 
         Route::prefix('api')
@@ -31,7 +36,19 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../Database/migrations');
 
+        Route::prefix('console')
+            ->middleware('console')
+            ->group(base_path('/Modules/Authentication/Infrastructure/Routes/console.php'));
+
         $this->loadFactoriesFrom(__DIR__.'/../Database/migrations/Database/factories');
+
+        $this->app['router']->aliasMiddleware('isVerified', EnsureEmailIsVerified::class);
+
+
+        $this->commands([
+            LogoutTimeCommand::class,
+        ]);
+
     }
 
     public function register(): void

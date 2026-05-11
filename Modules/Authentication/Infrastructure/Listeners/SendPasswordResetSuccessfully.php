@@ -3,9 +3,7 @@
 namespace Modules\Authentication\Infrastructure\Listeners;
 
 use Illuminate\Support\Facades\Log;
-use Modules\Authentication\Domain\Events\PasswordResetRequested;
 use Modules\Authentication\Domain\Events\PasswordResetSuccessfully;
-use Modules\Authentication\Domain\Events\UserLoggedIn;
 
 class SendPasswordResetSuccessfully
 {
@@ -22,6 +20,6 @@ class SendPasswordResetSuccessfully
      */
     public function handle(PasswordResetSuccessfully $event): void
     {
-        Log::info("Password Reset Request: {$event->email} at {$event->occurredAt->format('Y-m-d H:i:s')}");
+        Log::info("Password Reset Request: {$event->aggregateId()} at {$event->occurredAt()->format('Y-m-d H:i:s')}");
     }
 }

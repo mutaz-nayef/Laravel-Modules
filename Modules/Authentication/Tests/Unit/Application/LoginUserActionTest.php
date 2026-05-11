@@ -14,6 +14,7 @@ use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authentication\Domain\ValueObjects\IssuedToken;
+use Modules\Authentication\Infrastructure\Events\EventDispatcher;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
@@ -24,19 +25,22 @@ class LoginUserActionTest extends BaseTestCase
     private UserRepositoryInterface|MockInterface $userRepository;
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private TokenIssuerInterface|MockInterface $tokenIssuer;
+    private EventDispatcher $dispatcher;
 
     private LoginUserAction $action;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->roleRepository = Mockery::mock(RoleRepositoryInterface::class);
         $this->tokenIssuer = Mockery::mock(TokenIssuerInterface::class);
-
+        $this->dispatcher = new EventDispatcher;
         $this->action = new LoginUserAction(
             $this->userRepository,
             $this->tokenIssuer,
             $this->roleRepository,
+            $this->dispatcher,
         );
     }
 
@@ -84,5 +88,6 @@ class LoginUserActionTest extends BaseTestCase
     protected function tearDown(): void
     {
         Mockery::close();
+        parent::tearDown();
     }
 }

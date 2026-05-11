@@ -50,16 +50,15 @@ class RegisterUserAction
         );
 
         $roleUser = $this->roleRepository->findByName('user');
-        $roleAdmin = $this->roleRepository->findByName('admin');
 
-        if (!$roleUser || !$roleAdmin) {
+        if (!$roleUser) {
             throw new RoleNotFoundException('Role not found.', 404);
         }
 
         $user->assignRole($roleUser);
-        $user->assignRole($roleAdmin);
-        $user = $this->userRepository->save($user);
 
+        $user = $this->userRepository->save($user);
+        
         //  $user = $this->userRepository->saveRoles($user);
 
         // generate tokens

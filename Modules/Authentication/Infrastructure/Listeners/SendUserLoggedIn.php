@@ -20,6 +20,6 @@ class SendUserLoggedIn
      */
     public function handle(UserLoggedIn $event): void
     {
-        Log::info("UserModel logged in: {$event->email->value()} at {$event->occurredAt->format('Y-m-d H:i:s')}");
+        Log::info("User: {$event->aggregateId()} logged in at: {$event->occurredAt()->format('Y-m-d H:i:s')}");
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Modules\Authentication\Infrastructure\Repositories;
 
+use Illuminate\Support\Collection;
+use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
 use Modules\Authentication\Domain\ValueObjects\Email;
@@ -21,8 +23,13 @@ class EloquentUserRepository implements UserRepositoryInterface
         return $model ? $this->toDomainEntity($model) : null;
     }
 
-    public function toDomainEntity(UserModel $model): User
+    public function toDomainEntity(UserModel|Collection $model): User|array
     {
+        if ($model instanceof Collection) {
+            return $model
+                ->map(fn(UserModel $user) => $this->toDomainEntity($user))
+                ->all();
+        }
         return new User(
             id: new UserId($model->id),
             name: $model->name,
@@ -83,6 +90,20 @@ class EloquentUserRepository implements UserRepositoryInterface
         $model->permissions()->sync(array_map(fn($p) => $p->id()->value(), $user->permissions()));
 //        }
         return $model ? $this->toDomainEntity($model->refresh()) : null;
+    }
+
+    public function getAuthUsers(): ?array
+    {
+        return PersonalAccessToken::query()
+            ->with('tokenable')
+            ->where('expires_at', '>', now())
+            ->get()
+            ->pluck('tokenable')
+            ->unique('id')
+            ->map(fn($user) => $this->toDomainEntity($user))
+            ->values()
+            ->all();
+
     }
 
 }

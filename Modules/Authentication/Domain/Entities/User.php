@@ -3,10 +3,8 @@
 namespace Modules\Authentication\Domain\Entities;
 
 use DateTimeImmutable;
-use Modules\Authentication\Domain\Events\BaseEvent;
 use Modules\Authentication\Domain\Events\LoginAttemptedOutsideAllowedTime;
 use Modules\Authentication\Domain\Events\UserLoggedIn;
-use Modules\Authentication\Domain\Exceptions\EmailNotVerifiedException;
 use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
@@ -14,11 +12,12 @@ use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Entities\Role;
+use Modules\Shared\Domain\Events\RecordsEvents;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 final class User
 {
-    private array $events = [];
+    use RecordsEvents;
 
     /**
      * @param  Role[]  $roles
@@ -39,7 +38,6 @@ final class User
 
     /**
      * @throws UserNotActiveException
-     * @throws EmailNotVerifiedException
      * @throws InvalidCredentialsException
      * @throws LoginNotAllowedThisTimeException
      * @throws \DateMalformedStringException
@@ -47,11 +45,11 @@ final class User
     public function login(string $plain, ?DateTimeImmutable $now = null): void
     {
         if (!$this->verifyLoginTime($now)) {
-            // fix
-            $this->record(new LoginAttemptedOutsideAllowedTime($this->email()));
 
+            $this->recordThat(new LoginAttemptedOutsideAllowedTime($this->id()));
             throw new LoginNotAllowedThisTimeException('You are not allowed to login now', 403);
         }
+
         if (!$this->isActive) {
             throw new UserNotActiveException('Account is not active, Please support contact', 403);
         }
@@ -59,26 +57,49 @@ final class User
         if (!$this->password->verify($plain)) {
             throw new InvalidCredentialsException('Invalid credentials. Please try again.', 401);
         }
-        $this->record(new UserLoggedIn(($this->email)));
-
+        $this->recordThat(new UserLoggedIn(($this->id)));
     }
 
     /**
      * @throws \DateMalformedStringException
      */
-    public function verifyLoginTime(?DateTimeImmutable $now): bool
+    public function verifyLoginTime(?DateTimeImmutable $now = null): bool
     {
-
-        $now = $now?->format('H') ?? new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'))->format('H');
-
-        $start = (int) new  \DateTime('8:00')->format('H');
-        $end = (int) new  \DateTime('20:00')->format('H');
-        return ($now >= $start && $now <= $end);
+        if ($this->hasRole('admin')) {
+            return true;
+        }
+        $now ??= new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'));
+        $hour = (int) $now->format('H');
+        $start = 8;
+        $end = 16;
+        return $hour >= $start && $hour <= $end;
     }
 
-    private function record(BaseEvent $event): void
+    /**
+     * Check if user has role.
+     */
+    public function hasRole(Role|string $role): bool
     {
-        $this->events[] = $event;
+        if ($role instanceof Role) {
+            return in_array($role, $this->roles);
+        } else {
+            foreach ($this->roles as $userRole) {
+                if ($userRole->name() === $role) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function id(): ?UserId
+    {
+        return $this->id;
     }
 
     public function email(): Email
@@ -99,11 +120,6 @@ final class User
         return $this->roles;
     }
 
-    public function id(): ?UserId
-    {
-        return $this->id;
-    }
-
     /**
      * Check if user has any of listed roles
      */
@@ -111,6 +127,8 @@ final class User
     {
         return array_any($roles, $this->roles);
     }
+
+    // ---Getters---
 
     /**
      * Check if user has all listed roles
@@ -125,18 +143,8 @@ final class User
      */
     public function getRoleNames()
     {
-        $this->loadMissing('roles');
-        return $this->roles->pluck('auth_code');
     }
 
-    // ---Getters---
-
-    public function pullEvents(): array
-    {
-        $events = $this->events;
-        $this->events = [];
-        return $events;
-    }
 
     public function password(): HashedPassword
     {
@@ -218,19 +226,6 @@ final class User
     {
         $this->roles = array_filter(
             $this->roles, fn($roleName) => $roleName->name() !== $role->name());
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Check if user has role.
-     */
-    public function hasRole(Role $role): bool
-    {
-        return in_array($role, $this->roles);
     }
 
     public function assignRole(Role $role): void

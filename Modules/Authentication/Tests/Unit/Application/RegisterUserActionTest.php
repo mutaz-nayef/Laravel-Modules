@@ -57,11 +57,9 @@ class RegisterUserActionTest extends BaseTestCase
         );
 
         $roleUser = new Role(new RoleId(1), 'user', 'user');
-        $roleAdmin = new Role(new RoleId(2), 'admin', 'admin');
 
         $this->userRepository->shouldReceive('findByEmail')->once()->andReturn(null);
         $this->roleRepository->shouldReceive('findByName')->with('user')->once()->andReturn($roleUser);
-        $this->roleRepository->shouldReceive('findByName')->with('admin')->once()->andReturn($roleAdmin);
         $this->userRepository->shouldReceive('save')->with(Mockery::type(User::class))->once()->andReturn($user);
 
         $this->emailVerification->shouldReceive('sendEmailVerification')->once()->andReturn(null);

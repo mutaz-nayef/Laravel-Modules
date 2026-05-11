@@ -2,15 +2,16 @@
 
 namespace Modules\Authentication\Application\Actions;
 
+use DateMalformedStringException;
 use Modules\Authentication\Application\DTOs\Auth\Input\LoginInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Output\AuthOutputDto;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
-use Modules\Authentication\Domain\Exceptions\EmailNotVerifiedException;
 use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
 use Modules\Authentication\Domain\ValueObjects\Email;
+use Modules\Authentication\Infrastructure\Events\EventDispatcher;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 
@@ -21,17 +22,17 @@ class LoginUserAction
         private readonly UserRepositoryInterface $userRepository,
         private readonly TokenIssuerInterface $tokenIssuer,
         private readonly RoleRepositoryInterface $roleRepository,
+        private readonly EventDispatcher $eventDispatcher,
     ) {
     }
 
     /**
      * @param  LoginInputDto  $input
      * @return AuthOutputDto
-     * @throws EmailNotVerifiedException
      * @throws InvalidCredentialsException
      * @throws LoginNotAllowedThisTimeException
      * @throws UserNotActiveException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function execute(LoginInputDto $input): AuthOutputDto
     {
@@ -43,6 +44,11 @@ class LoginUserAction
         // Domain enforces business rules
         $user->login($input->password);
 
+        $events = $user->pullDomainEvents();
+
+        foreach ($events as $event) {
+            $this->eventDispatcher->dispatch($event);
+        }
         #Fix:
         // load the role for user
         $roles = $this->roleRepository->findByUserId($user->id());

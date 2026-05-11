@@ -10,11 +10,4 @@ final readonly class LoginInputDto
     ) {
     }
 
-    public static function fromArray(array $data): LoginInputDto
-    {
-        return new self(
-            email: $data['email'],
-            password: $data['password'],
-        );
-    }
 }

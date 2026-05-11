@@ -12,7 +12,6 @@ class SendLoginAttemptedOutsideAllowedTime
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -20,6 +19,9 @@ class SendLoginAttemptedOutsideAllowedTime
      */
     public function handle(LoginAttemptedOutsideAllowedTime $event): void
     {
-        Log::info("UserModel attempted loginInputDto outside allowed time: {$event->email} at {$event->occurredAt->format('Y-m-d H:i:s')}");
+
+        Log::info(
+            "Login blocked for user {$event->aggregateId()} at {$event->occurredAt()->format('Y-m-d H:i:s')}"
+        );
     }
 }

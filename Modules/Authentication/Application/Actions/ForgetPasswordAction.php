@@ -5,7 +5,6 @@ namespace Modules\Authentication\Application\Actions;
 
 use Modules\Authentication\Application\DTOs\Auth\Input\ForgetPasswordInputDto;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
-use Modules\Authentication\Domain\Events\PasswordResetRequested;
 
 class ForgetPasswordAction
 {
@@ -19,9 +18,10 @@ class ForgetPasswordAction
     {
         $status = $this->passwordReset->sendResetLink($input->email);
 
-        if ($status) {
-            event(new PasswordResetRequested($input->email));
-        }
+        //fix
+//        if ($status) {
+//            event(new PasswordResetRequested($input->email));
+//        }
         return $status;
     }
 }

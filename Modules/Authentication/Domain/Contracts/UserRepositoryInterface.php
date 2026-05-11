@@ -18,4 +18,9 @@ interface UserRepositoryInterface
 
     public function savePermissions(User $user): ?User;
 
+    /**
+     * @return User[]|null
+     */
+    public function getAuthUsers(): ?array;
+
 }
