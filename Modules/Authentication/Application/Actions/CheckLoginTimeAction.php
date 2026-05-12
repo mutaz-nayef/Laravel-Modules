@@ -26,7 +26,7 @@ class CheckLoginTimeAction
         foreach ($authUsers as $user) {
             if (!$user->verifyLoginTime()) {
                 $logoutUsers[] = $user;
-//                $this->tokenIssuer->revoke($user->id());
+                $this->tokenIssuer->revoke($user->id());
             }
         }
         return new ForceLogoutTimeOutputDto($logoutUsers);
