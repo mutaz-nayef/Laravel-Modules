@@ -10,7 +10,7 @@ use Modules\Authentication\Domain\Events\PasswordResetSuccessfully;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authentication\Domain\ValueObjects\IssuedToken;
-use Modules\Authentication\Infrastructure\Events\EventDispatcher;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
 class PasswordResetAction
 {

@@ -8,12 +8,14 @@ use Modules\Authentication\Domain\Contracts\EmailVerificationInterface;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
+use Modules\Authentication\Domain\Events\UserRegistered;
 use Modules\Authentication\Domain\Exceptions\EmailAlreadyExistsException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
 class RegisterUserAction
 {
@@ -22,6 +24,7 @@ class RegisterUserAction
         private readonly TokenIssuerInterface $tokenIssuer,
         private readonly RoleRepositoryInterface $roleRepository,
         private readonly EmailVerificationInterface $emailVerification,
+        private readonly EventDispatcher $eventDispatcher,
 
     ) {
     }
@@ -58,14 +61,14 @@ class RegisterUserAction
         $user->assignRole($roleUser);
 
         $user = $this->userRepository->save($user);
-        
-        //  $user = $this->userRepository->saveRoles($user);
 
         // generate tokens
         $access_token = $this->tokenIssuer->issue($user->id(), 'access_token');
         $refresh_token = $this->tokenIssuer->issue($user->id(), 'refresh_token', 60 * 24 * 30);
 
         $this->emailVerification->sendEmailVerification($user->id());
+
+        $this->eventDispatcher->dispatch(new UserRegistered($user->id()));
 
         // return output dto
         return new AuthOutputDto(

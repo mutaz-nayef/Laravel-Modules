@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Authorization\Presentation\Http\Controllers\PermissionController;
 use Modules\Authorization\Presentation\Http\Controllers\RoleController;
 use Modules\Authorization\Presentation\Http\Controllers\RolePermissionController;
@@ -9,14 +8,6 @@ use Modules\Authorization\Presentation\Http\Controllers\UserPermissionController
 use Modules\Authorization\Presentation\Http\Controllers\UserRoleController;
 
 Route::get('/test-authorization', function () {
-    $users = PersonalAccessToken::query()
-        ->with('tokenable')
-        ->where('expires_at', '>', now())
-        ->get()
-        ->pluck('tokenable')
-        ->unique('id')
-        ->toArray();
-    dd($users);
     return 'test-authorization';
 });
 

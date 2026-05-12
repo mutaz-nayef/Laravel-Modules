@@ -2,7 +2,7 @@
 
 namespace Modules\Authentication\Tests\Unit\Application;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Authentication\Application\Actions\RegisterUserAction;
@@ -18,32 +18,36 @@ use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
 use Modules\Shared\Domain\ValueObjects\UserId;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
-class RegisterUserActionTest extends BaseTestCase
+class RegisterUserActionTest extends TestCase
 {
     private UserRepositoryInterface|MockInterface $userRepository;
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private TokenIssuerInterface|MockInterface $tokenIssuer;
     private EmailVerificationInterface|MockInterface $emailVerification;
+    private EventDispatcher $eventDispatcher;
 
     private RegisterUserAction $action;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->roleRepository = Mockery::mock(RoleRepositoryInterface::class);
         $this->tokenIssuer = Mockery::mock(TokenIssuerInterface::class);
         $this->emailVerification = Mockery::mock(EmailVerificationInterface::class);
-
+        $this->eventDispatcher = new EventDispatcher;
         $this->action = new RegisterUserAction(
             $this->userRepository,
             $this->tokenIssuer,
             $this->roleRepository,
-            $this->emailVerification
+            $this->emailVerification,
+            $this->eventDispatcher
         );
     }
 
-    // Fix
+
     public function test_user_successfully_register_return_dto(): void
     {
         $userId = new UserId(1);
@@ -61,9 +65,7 @@ class RegisterUserActionTest extends BaseTestCase
         $this->userRepository->shouldReceive('findByEmail')->once()->andReturn(null);
         $this->roleRepository->shouldReceive('findByName')->with('user')->once()->andReturn($roleUser);
         $this->userRepository->shouldReceive('save')->with(Mockery::type(User::class))->once()->andReturn($user);
-
         $this->emailVerification->shouldReceive('sendEmailVerification')->once()->andReturn(null);
-
         $this->tokenIssuer
             ->shouldReceive('issue')
             ->twice()
@@ -79,16 +81,13 @@ class RegisterUserActionTest extends BaseTestCase
         $this->assertSame('access_token', $output->accessToken);
         $this->assertSame('refresh_token', $output->refreshToken);
         $this->assertSame('Bearer', $output->tokenType);
-//
-//        $this->assertEqualsCanonicalizing(
-//            ['user', 'admin'],
-//            array_map(fn($role) => $role->name(), $output->roles)
-//        );
+
     }
 
 
     protected function tearDown(): void
     {
         Mockery::close();
+        parent::tearDown();
     }
 }

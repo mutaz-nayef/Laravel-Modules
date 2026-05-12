@@ -2,7 +2,7 @@
 
 namespace Modules\Authentication\Tests\Unit\Application;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\TestCase;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Authentication\Application\Actions\LoginUserAction;
@@ -14,13 +14,13 @@ use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authentication\Domain\ValueObjects\IssuedToken;
-use Modules\Authentication\Infrastructure\Events\EventDispatcher;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
 use Modules\Shared\Domain\ValueObjects\UserId;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
-class LoginUserActionTest extends BaseTestCase
+class LoginUserActionTest extends TestCase
 {
     private UserRepositoryInterface|MockInterface $userRepository;
     private RoleRepositoryInterface|MockInterface $roleRepository;

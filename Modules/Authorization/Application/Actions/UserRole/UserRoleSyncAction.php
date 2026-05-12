@@ -9,8 +9,6 @@ use Modules\Authorization\Application\DTOs\Output\UserOutputDto;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
 
-//use Modules\Authorization\Domain\Services\Domain\Contracts\RolePermissionInterface;
-
 class UserRoleSyncAction
 {
     public function __construct(

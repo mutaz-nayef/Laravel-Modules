@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authentication\Infrastructure\Events;
+namespace Modules\Shared\Infrastructure\Events;
 
 final class EventDispatcher
 {

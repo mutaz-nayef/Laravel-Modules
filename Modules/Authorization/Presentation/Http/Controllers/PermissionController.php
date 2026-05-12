@@ -99,7 +99,7 @@ class PermissionController extends BaseController
     {
         return $this->handle(function () use ($permission) {
 
-            $permission = $this->permissionDestroyAction->execute(
+            $this->permissionDestroyAction->execute(
                 new BasePermissionInputDto(new PermissionId($permission))
             );
 

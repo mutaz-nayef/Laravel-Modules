@@ -7,7 +7,7 @@ use Modules\Authentication\Application\DTOs\Auth\Input\ForgetPasswordInputDto;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Events\PasswordResetSuccessfully;
-use Modules\Authentication\Infrastructure\Events\EventDispatcher;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
 class ForgetPasswordAction
 {

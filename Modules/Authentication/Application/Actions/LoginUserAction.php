@@ -11,9 +11,9 @@ use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
 use Modules\Authentication\Domain\ValueObjects\Email;
-use Modules\Authentication\Infrastructure\Events\EventDispatcher;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
+use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
 
 class LoginUserAction
@@ -49,8 +49,7 @@ class LoginUserAction
         foreach ($events as $event) {
             $this->eventDispatcher->dispatch($event);
         }
-        #Fix:
-        // load the role for user
+
         $roles = $this->roleRepository->findByUserId($user->id());
         if ($roles) {
             foreach ($roles as $role) {

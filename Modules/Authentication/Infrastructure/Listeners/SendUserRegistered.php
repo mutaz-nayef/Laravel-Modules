@@ -18,6 +18,6 @@ class SendUserRegistered
 
     public function handle(UserRegistered $event): void
     {
-        Log::info("UserModel Registered at {$event->aggregateId()} at {$event->occurredAt()->format('Y-m-d H:i:s')}");
+        Log::info("User: {$event->aggregateId()} Registered at:{$event->occurredAt()->format('Y-m-d H:i:s')}");
     }
 }
