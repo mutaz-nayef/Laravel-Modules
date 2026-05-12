@@ -19,12 +19,15 @@ This module provides:
 - Logout user
 - Reset password
 - Email Verification
+- Refresh Access Token
 
 All endpoints return JSON responses.
 
 ---
 
 ## Register
+
+“When a new user registers, the user will receive a verification email to confirm the email address.”
 
 #### Endpoint
 
@@ -43,10 +46,42 @@ http://localhost:8000/api/register
 
 ```json
 {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "password",
-    "password_confirmation": "password"
+    "success": true,
+    "data": {
+        "user": {
+            "id": 6,
+            "name": "test",
+            "email": "test3@email.com",
+            "roles": [
+                {
+                    "id": 4,
+                    "name": "user",
+                    "display_name": "User",
+                    "permissions": [
+                        {
+                            "id": 11,
+                            "name": "home:view",
+                            "group": "home"
+                        },
+                        {
+                            "id": 12,
+                            "name": "posts:view",
+                            "group": "posts"
+                        }
+                    ]
+                }
+            ]
+        },
+        "permissions": [],
+        "token": {
+            "access_token": "19|LhCq8ecL5k3SssXTPG6WaLRQglldhI4TWEEtf7z40d902771",
+            "refresh_token": "20|Q15588xniw9tU2vsx3k1XiWAZUpxdb6tJBFnbXTt7cf21f2a",
+            "token_type": "Bearer"
+        }
+    },
+    "errors": "",
+    "message": "Authenticated, We Sent you email to verify you email!",
+    "status": 200
 }
 ```
 
@@ -134,38 +169,78 @@ http://localhost:8000/api/login
                     "permissions": [
                         {
                             "id": 1,
-                            "name": "posts:view",
-                            "group": "posts"
+                            "name": "roles:view",
+                            "group": "roles"
                         },
                         {
                             "id": 2,
-                            "name": "posts:create",
-                            "group": "posts"
+                            "name": "roles:create",
+                            "group": "roles"
                         },
                         {
                             "id": 3,
-                            "name": "posts:edit",
-                            "group": "posts"
+                            "name": "roles:edit",
+                            "group": "roles"
                         },
                         {
                             "id": 4,
-                            "name": "posts:delete",
-                            "group": "posts"
+                            "name": "roles:delete",
+                            "group": "roles"
                         },
                         {
                             "id": 5,
+                            "name": "permissions:view",
+                            "group": "permissions"
+                        },
+                        {
+                            "id": 6,
+                            "name": "permissions:create",
+                            "group": "permissions"
+                        },
+                        {
+                            "id": 7,
+                            "name": "permissions:edit",
+                            "group": "permissions"
+                        },
+                        {
+                            "id": 8,
+                            "name": "permissions:delete",
+                            "group": "permissions"
+                        },
+                        {
+                            "id": 9,
                             "name": "users:view",
                             "group": "users"
                         },
                         {
-                            "id": 6,
+                            "id": 10,
                             "name": "users:manage",
                             "group": "users"
                         },
                         {
-                            "id": 7,
+                            "id": 11,
                             "name": "home:view",
                             "group": "home"
+                        },
+                        {
+                            "id": 12,
+                            "name": "posts:view",
+                            "group": "posts"
+                        },
+                        {
+                            "id": 13,
+                            "name": "posts:create",
+                            "group": "posts"
+                        },
+                        {
+                            "id": 14,
+                            "name": "posts:edit",
+                            "group": "posts"
+                        },
+                        {
+                            "id": 15,
+                            "name": "posts:delete",
+                            "group": "posts"
                         }
                     ]
                 }
@@ -173,7 +248,8 @@ http://localhost:8000/api/login
         },
         "permissions": [],
         "token": {
-            "access_token": "3|1NvZ2TVMBiIs5FWHkSLhcPMCe4RsglOzyac6msTMf21662b7",
+            "access_token": "17|vjzP5Yyvqxhm7VvH8Rw1tKzkPMJ9Oxx1JFgGkvwde0d449c8",
+            "refresh_token": "18|t3Jee7SkhesedngB5BFY5Vta4298ucDXACDwtCrbacd363b4",
             "token_type": "Bearer"
         }
     },
@@ -366,18 +442,59 @@ Authorization: Bearer {token}
     "status": 200
 }
 ```
+
 ---
+
+## Refresh Access Token
+
+“When a user logs in for the first time, the user receives an access token used for authenticated requests. The access
+token is valid for 10 hours before it expires. The user also receives a refresh token, which expires after 30 days and
+is used to generate a new access token without requiring the user to log in again. ”
+
+#### Endpoint
+
+``POST
+``
+http://localhost:8000/api/refresh-token
+
+### Request Body
+
+| Field         | Type   | Required | Rules   | Description        |
+|---------------|--------|----------|---------|--------------------|
+| refresh_token | string | Yes      | rquired | user refresh token |
+
+```json
+{
+    "refresh_token": "9|ITN8dfvU5lEvsH8dqBsU9pA8zrAU3P46NJv3HNMS28cbd6c8"
+}
+```
+
+### Success Response Json
+
+```json
+{
+    "success": true,
+    "data": {
+        "access_token": "21|840vJNw6k4f68FhTqY3K0w8Khq6E7IDrCWZcHiQj22e17149"
+    },
+    "errors": "",
+    "message": "Authenticated, We Sent you email to verify you email!",
+    "status": 200
+}
+```
 
 ## Conclusion
 
-This Authentication module provides a complete flow for user management, including registration, login, logout, password reset, and email verification.
+This Authentication module provides a complete flow for user management, including registration, login, logout, password
+reset, and email verification.
 
 To successfully integrate with this API:
 
 - Always store and send the `access_token` using the `Authorization: Bearer {token}` header for protected endpoints.
 - Follow the validation rules specified for each request body.
 - Handle error responses properly, especially validation and authentication errors.
-- Use the email-based flows (password reset and email verification) as designed—these rely on secure links sent to the user and should not be constructed manually.
+- Use the email-based flows (password reset and email verification) as designed—these rely on secure links sent to the
+  user and should not be constructed manually.
 
 ---
 

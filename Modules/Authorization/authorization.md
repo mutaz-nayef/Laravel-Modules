@@ -558,7 +558,7 @@ http://localhost:8000/api/roles/4/permissions
 Authorization: Bearer {token}
 ``
 
-### Request Body
+#### Request Body
 
 | Field       | Type  | Required | Rules                                                      | Description                        |
 |-------------|-------|----------|------------------------------------------------------------|------------------------------------|
@@ -655,11 +655,11 @@ Authorization: Bearer {token}
 
 ---
 
-### PATCH Permission for given Role
+### Bulk Remove Permission for given Role
 
 #### EndPoint
 
-``PATCH
+``DELETE
 ``  
 http://localhost:8000/api/roles/1/permissions
 
@@ -671,19 +671,13 @@ Authorization: Bearer {token}
 
 ### Request Body
 
-| Field    | Type   | Required | Rules                            | Description                         |
-|----------|--------|----------|----------------------------------|-------------------------------------|
-| add      | array  | Yes      | Must be an array                 | List of permissions to add          |
-| add.*    | string | Yes      | Must exist in `permissions.name` | Permission name (e.g. `posts:view`) |
-| remove   | array  | Yes      | Must be an array                 | List of permissions to remove       |
-| remove.* | string | Yes      | Must exist in `permissions.name` | Permission name (e.g. `posts:edit`) |
+| Field       | Type  | Required | Rules                                                      | Description                        |
+|-------------|-------|----------|------------------------------------------------------------|------------------------------------|
+| permissions | array | Yes      | the permissions must be exists in database e.g. posts:edit | Permission unique name, posts:view |
 
 ```json
 {
-    "add": [
-        "posts:view"
-    ],
-    "remove": [
+    "permissions": [
         "home:view"
     ]
 }
@@ -701,13 +695,78 @@ Authorization: Bearer {token}
         "permissions": [
             {
                 "id": 1,
-                "name": "posts:view",
+                "name": "roles:view",
+                "group": "roles"
+            },
+            {
+                "id": 2,
+                "name": "roles:create",
+                "group": "roles"
+            },
+            {
+                "id": 3,
+                "name": "roles:edit",
+                "group": "roles"
+            },
+            {
+                "id": 4,
+                "name": "roles:delete",
+                "group": "roles"
+            },
+            {
+                "id": 5,
+                "name": "permissions:view",
+                "group": "permissions"
+            },
+            {
+                "id": 6,
+                "name": "permissions:create",
+                "group": "permissions"
+            },
+            {
+                "id": 7,
+                "name": "permissions:edit",
+                "group": "permissions"
+            },
+            {
+                "id": 8,
+                "name": "permissions:delete",
+                "group": "permissions"
+            },
+            {
+                "id": 9,
+                "name": "users:view",
+                "group": "users"
+            },
+            {
+                "id": 10,
+                "name": "users:manage",
+                "group": "users"
+            },
+            {
+                "id": 11,
+                "name": "home:view",
+                "group": "home"
+            },
+            {
+                "id": 13,
+                "name": "posts:create",
+                "group": "posts"
+            },
+            {
+                "id": 14,
+                "name": "posts:edit",
+                "group": "posts"
+            },
+            {
+                "id": 15,
+                "name": "posts:delete",
                 "group": "posts"
             }
         ]
     },
     "errors": "",
-    "message": "Permission updated.",
+    "message": "Permissions posts:view removed successfully.",
     "status": 200
 }
 ```
@@ -877,6 +936,80 @@ Authorization: Bearer {token}
     },
     "errors": "",
     "message": "User permissions synced",
+    "status": 200
+}
+```
+
+### Bulk Remove Permission for given user
+
+#### EndPoint
+
+``DELETE
+``  
+http://localhost:8000/api/users/1/permissions
+
+#### Headers
+
+``
+Authorization: Bearer {token}
+``
+
+### Request Body
+
+| Field       | Type  | Required | Rules                                                      | Description                        |
+|-------------|-------|----------|------------------------------------------------------------|------------------------------------|
+| permissions | array | Yes      | the permissions must be exists in database e.g. posts:edit | Permission unique name, posts:view |
+
+```json
+{
+    "permissions": [
+        "home:view"
+    ]
+}
+```
+
+### Success Response Json
+
+```json
+{
+    "success": true,
+    "data": {
+        "id": 2,
+        "name": "editor",
+        "email": "editor@example.com",
+        "roles": [
+            {
+                "id": 2,
+                "name": "editor",
+                "display_name": "Editor",
+                "permissions": [
+                    {
+                        "id": 12,
+                        "name": "posts:view",
+                        "group": "posts"
+                    },
+                    {
+                        "id": 13,
+                        "name": "posts:create",
+                        "group": "posts"
+                    },
+                    {
+                        "id": 14,
+                        "name": "posts:edit",
+                        "group": "posts"
+                    },
+                    {
+                        "id": 15,
+                        "name": "posts:delete",
+                        "group": "posts"
+                    }
+                ]
+            }
+        ],
+        "permissions": []
+    },
+    "errors": "",
+    "message": "Permissions home:view removed successfully.",
     "status": 200
 }
 ```
@@ -1119,6 +1252,122 @@ Authorization: Bearer {token}
     },
     "errors": "",
     "message": "User roles synced",
+    "status": 200
+}
+```
+
+### Bulk Remove Role for given user
+
+#### EndPoint
+
+``DELETE
+``  
+http://localhost:8000/api/users/1/roles
+
+#### Headers
+
+``
+Authorization: Bearer {token}
+``
+
+### Request Body
+
+| Field | Type  | Required | Rules                                | Description |
+|-------|-------|----------|--------------------------------------|-------------|
+| roles | array | Yes      | the roles must be exists in database | ["editor"]  |
+
+```json
+{
+    "roles": [
+        "editor"
+    ]
+}
+```
+
+### Success Response Json
+
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "admin",
+        "display_name": "Administrator",
+        "permissions": [
+            {
+                "id": 1,
+                "name": "roles:view",
+                "group": "roles"
+            },
+            {
+                "id": 2,
+                "name": "roles:create",
+                "group": "roles"
+            },
+            {
+                "id": 3,
+                "name": "roles:edit",
+                "group": "roles"
+            },
+            {
+                "id": 4,
+                "name": "roles:delete",
+                "group": "roles"
+            },
+            {
+                "id": 5,
+                "name": "permissions:view",
+                "group": "permissions"
+            },
+            {
+                "id": 6,
+                "name": "permissions:create",
+                "group": "permissions"
+            },
+            {
+                "id": 7,
+                "name": "permissions:edit",
+                "group": "permissions"
+            },
+            {
+                "id": 8,
+                "name": "permissions:delete",
+                "group": "permissions"
+            },
+            {
+                "id": 9,
+                "name": "users:view",
+                "group": "users"
+            },
+            {
+                "id": 10,
+                "name": "users:manage",
+                "group": "users"
+            },
+            {
+                "id": 11,
+                "name": "home:view",
+                "group": "home"
+            },
+            {
+                "id": 13,
+                "name": "posts:create",
+                "group": "posts"
+            },
+            {
+                "id": 14,
+                "name": "posts:edit",
+                "group": "posts"
+            },
+            {
+                "id": 15,
+                "name": "posts:delete",
+                "group": "posts"
+            }
+        ]
+    },
+    "errors": "",
+    "message": "Permissions posts:view removed successfully.",
     "status": 200
 }
 ```
