@@ -11,8 +11,8 @@ use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 class UserPermissionGetAction
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository,
-        private PermissionRepositoryInterface $permissionRepository
+        private readonly UserRepositoryInterface $userRepository,
+        private readonly PermissionRepositoryInterface $permissionRepository
     ) {
 
     }

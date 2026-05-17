@@ -2,10 +2,13 @@
 
 namespace Modules\Authentication\Infrastructure\Models;
 
+use App\Models\Notification;
+use App\Models\NotificationTypes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -61,5 +64,21 @@ class UserModel extends Authenticatable implements MustVerifyEmail
         )
             ->using(UserPermissionPivot::class)
             ->withPivot('conditions');  // ← load conditions from pivot
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function notificationsTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            NotificationTypes::class,
+            'notification_preferences',
+            'user_id',
+            'notification_type_id'
+        )->withPivot('enabled')
+            ->withTimestamps();
     }
 }

@@ -13,7 +13,7 @@ use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
-use Modules\Shared\Infrastructure\Events\EventDispatcher;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 
 
 class LoginUserAction
@@ -22,7 +22,7 @@ class LoginUserAction
         private readonly UserRepositoryInterface $userRepository,
         private readonly TokenIssuerInterface $tokenIssuer,
         private readonly RoleRepositoryInterface $roleRepository,
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
 
@@ -47,7 +47,7 @@ class LoginUserAction
         $events = $user->pullDomainEvents();
 
         foreach ($events as $event) {
-            $this->eventDispatcher->dispatch($event);
+            $this->dispatcher->dispatch($event);
         }
 
         $roles = $this->roleRepository->findByUserId($user->id());

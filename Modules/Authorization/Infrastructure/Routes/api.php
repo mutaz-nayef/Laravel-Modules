@@ -69,3 +69,11 @@ Route::fallback(function () {
     ], 404);
 
 });
+
+//Route::get('/broadcast', function () {
+//    broadcast(new PermissionAssignedForRole(
+//        roleId: new RoleId(1),
+//        permissionId: new PermissionId(1),
+//    ));
+//    echo 1;
+//});

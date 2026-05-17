@@ -17,5 +17,6 @@ class AssignNewUserRoleListener
 
     public function handle(UserRegistered $event): void
     {
+
     }
 }

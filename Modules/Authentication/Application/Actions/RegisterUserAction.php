@@ -15,7 +15,7 @@ use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
-use Modules\Shared\Infrastructure\Events\EventDispatcher;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 
 class RegisterUserAction
 {
@@ -24,7 +24,7 @@ class RegisterUserAction
         private readonly TokenIssuerInterface $tokenIssuer,
         private readonly RoleRepositoryInterface $roleRepository,
         private readonly EmailVerificationInterface $emailVerification,
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly EventDispatcherInterface $dispatcher,
 
     ) {
     }
@@ -68,7 +68,7 @@ class RegisterUserAction
 
         $this->emailVerification->sendEmailVerification($user->id());
 
-        $this->eventDispatcher->dispatch(new UserRegistered($user->id()));
+        $this->dispatcher->dispatch(new UserRegistered($user->id()));
 
         // return output dto
         return new AuthOutputDto(

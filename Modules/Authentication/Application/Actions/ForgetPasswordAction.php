@@ -7,15 +7,14 @@ use Modules\Authentication\Application\DTOs\Auth\Input\ForgetPasswordInputDto;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Events\PasswordResetSuccessfully;
-use Modules\Shared\Infrastructure\Events\EventDispatcher;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 
 class ForgetPasswordAction
 {
     public function __construct(
         protected PasswordResetInterface $passwordReset,
-        private readonly EventDispatcher $eventDispatcher,
         private readonly UserRepositoryInterface $userRepository,
-
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 

@@ -2,10 +2,14 @@
 
 namespace Modules\Authorization\Domain\Entities;
 
+use Modules\Authorization\Domain\Events\RolePermissionUpdated;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
+use Modules\Shared\Domain\Events\RecordsEvents;
 
 final class Role
 {
+    use RecordsEvents;
+
     /**
      * @param  Permission[]  $permissions
      */
@@ -67,6 +71,13 @@ final class Role
             return;
         }
         $this->permissions[] = $permission;
+
+        $this->recordThat(new RolePermissionUpdated($this->id(), $permission->id()));;
+    }
+
+    public function id(): ?RoleId
+    {
+        return $this?->id;
     }
 
     /**
@@ -96,11 +107,6 @@ final class Role
             'display_name' => $this->displayName(),
             'permissions' => $this->permissions(),
         ];
-    }
-
-    public function id(): ?RoleId
-    {
-        return $this?->id;
     }
 
     public function displayName(): string

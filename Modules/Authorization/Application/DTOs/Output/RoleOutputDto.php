@@ -17,5 +17,5 @@ class RoleOutputDto
         public array $permissions,
     ) {
     }
-    
+
 }

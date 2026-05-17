@@ -26,8 +26,11 @@ class RolesAndPermissionsSeeder extends Seeder
             ['name' => 'permissions:edit', 'group' => 'permissions'],
             ['name' => 'permissions:delete', 'group' => 'permissions'],
             ['name' => 'users:view', 'group' => 'users'],
-            ['name' => 'users:manage', 'group' => 'users'],
+            ['name' => 'users:create', 'group' => 'users'],
+            ['name' => 'users:edit', 'group' => 'users'],
+            ['name' => 'users:delete', 'group' => 'users'],
             ['name' => 'home:view', 'group' => 'home'],
+            ['name' => 'profiles:view', 'group' => 'home'],
             ['name' => 'posts:view', 'group' => 'posts'],
             ['name' => 'posts:create', 'group' => 'posts'],
             ['name' => 'posts:edit', 'group' => 'posts'],
@@ -106,7 +109,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $normalUser->permissions()->sync([
             $byName['posts:view']->id => ['conditions' => null],
-            $byName['home:view']->id => ['conditions' => null]
+            $byName['home:view']->id => ['conditions' => null],
+            $byName['profiles:view']->id => ['conditions' => null]
         ]);
     }
 }

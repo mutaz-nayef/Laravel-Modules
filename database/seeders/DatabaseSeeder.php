@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
         ]);
         $editor->roles()->attach($editorRole);
 
+        $this->call(NotificationSeeder::class);
     }
 }

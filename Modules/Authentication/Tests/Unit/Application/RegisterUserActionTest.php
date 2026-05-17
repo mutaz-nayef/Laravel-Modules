@@ -17,8 +17,8 @@ use Modules\Authentication\Domain\ValueObjects\IssuedToken;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 use Modules\Shared\Domain\ValueObjects\UserId;
-use Modules\Shared\Infrastructure\Events\EventDispatcher;
 
 class RegisterUserActionTest extends TestCase
 {
@@ -26,7 +26,7 @@ class RegisterUserActionTest extends TestCase
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private TokenIssuerInterface|MockInterface $tokenIssuer;
     private EmailVerificationInterface|MockInterface $emailVerification;
-    private EventDispatcher $eventDispatcher;
+    private EventDispatcherInterface|MockInterface $eventDispatcher;
 
     private RegisterUserAction $action;
 
@@ -37,7 +37,7 @@ class RegisterUserActionTest extends TestCase
         $this->roleRepository = Mockery::mock(RoleRepositoryInterface::class);
         $this->tokenIssuer = Mockery::mock(TokenIssuerInterface::class);
         $this->emailVerification = Mockery::mock(EmailVerificationInterface::class);
-        $this->eventDispatcher = new EventDispatcher;
+        $this->eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $this->action = new RegisterUserAction(
             $this->userRepository,
             $this->tokenIssuer,
@@ -73,6 +73,8 @@ class RegisterUserActionTest extends TestCase
                 new IssuedToken('access_token'),
                 new IssuedToken('refresh_token')
             );
+        $this->eventDispatcher->shouldReceive('dispatch')->once()->andReturn(null);
+
 
         $output = $this->action->execute(new RegisterInputDto('user test', 'john@example.com', 'password'));
 

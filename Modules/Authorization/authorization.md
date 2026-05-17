@@ -436,7 +436,7 @@ Authorization: Bearer {token}
 
 --- 
 
-### Update Role
+### Update Permission
 
 #### Endpoint
 

@@ -8,12 +8,14 @@ use Modules\Authorization\Domain\Contracts\PermissionRepositoryInterface;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Exceptions\PermissionNotFoundException;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 
 class RolePermissionStoreAction
 {
     public function __construct(
-        protected RoleRepositoryInterface $roleRepository,
-        protected PermissionRepositoryInterface $permissionRepository
+        protected readonly RoleRepositoryInterface $roleRepository,
+        protected readonly PermissionRepositoryInterface $permissionRepository,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {
 
     }
@@ -37,6 +39,7 @@ class RolePermissionStoreAction
         foreach ($permissions as $permission) {
             $role->givePermissionTo($permission);
         }
+        $this->eventDispatcher->dispatchAll($role->pullDomainEvents());
         $role = $this->roleRepository->savePermissions($role);
 
         return new RoleOutputDto(

@@ -2,7 +2,6 @@
 
 namespace Modules\Authentication\Tests\Unit\Application;
 
-use Illuminate\Foundation\Testing\TestCase;
 use Mockery;
 use Mockery\MockInterface;
 use Modules\Authentication\Application\Actions\LoginUserAction;
@@ -17,16 +16,16 @@ use Modules\Authentication\Domain\ValueObjects\IssuedToken;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Role;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
+use Modules\Shared\Abstractions\EventDispatcherInterface;
 use Modules\Shared\Domain\ValueObjects\UserId;
-use Modules\Shared\Infrastructure\Events\EventDispatcher;
+use PHPUnit\Framework\TestCase;
 
 class LoginUserActionTest extends TestCase
 {
     private UserRepositoryInterface|MockInterface $userRepository;
     private RoleRepositoryInterface|MockInterface $roleRepository;
     private TokenIssuerInterface|MockInterface $tokenIssuer;
-    private EventDispatcher $dispatcher;
-
+    private EventDispatcherInterface|MockInterface $dispatcher;
     private LoginUserAction $action;
 
     public function setUp(): void
@@ -35,7 +34,7 @@ class LoginUserActionTest extends TestCase
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->roleRepository = Mockery::mock(RoleRepositoryInterface::class);
         $this->tokenIssuer = Mockery::mock(TokenIssuerInterface::class);
-        $this->dispatcher = new EventDispatcher;
+        $this->dispatcher = Mockery::mock(EventDispatcherInterface::class);
         $this->action = new LoginUserAction(
             $this->userRepository,
             $this->tokenIssuer,
@@ -67,6 +66,8 @@ class LoginUserActionTest extends TestCase
                 new IssuedToken('access_token'),
                 new IssuedToken('refresh_token')
             );
+        $this->dispatcher->shouldReceive('dispatch')->once()->andReturn(null);
+
         $output = $this->action->execute(new LoginInputDTO('john@example.com', 'password'));
 
         $this->assertSame('john@example.com', $output->email);

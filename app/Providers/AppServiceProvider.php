@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Modules\Authentication\Infrastructure\Providers\AuthServiceProvider;
 use Modules\Authorization\Infrastructure\Providers\AuthorizationServiceProvider;
+use Modules\Shared\Infrastructure\Providers\SharedServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->register(AuthServiceProvider::class);
         $this->app->register(AuthorizationServiceProvider::class);
+        $this->app->register(SharedServiceProvider::class);
     }
 
     /**

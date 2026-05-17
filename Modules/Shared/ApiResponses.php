@@ -8,7 +8,7 @@ trait ApiResponses
 {
     protected static function ok($message, $data = [])
     {
-        return self::success($message, $data, 200);
+        return self::success($message, $data);
     }
 
     protected static function success($message, $data = [], $statusCode = 200): JsonResponse

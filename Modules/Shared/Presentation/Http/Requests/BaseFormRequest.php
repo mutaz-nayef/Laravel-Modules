@@ -18,7 +18,7 @@ abstract class BaseFormRequest extends FormRequest
 
     abstract public function rules(): array;
 
-    
+
     public function failedValidation(Validator $validator): HttpResponseException
     {
         throw new HttpResponseException(
