@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/verify-email/{id}/{hash}',
         [EmailVerificationController::class, 'verify'])->name('verification.verify');
 
+    Route::get('/me', [AuthController::class, 'me']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

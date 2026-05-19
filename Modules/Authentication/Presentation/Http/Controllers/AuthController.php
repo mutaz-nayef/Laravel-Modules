@@ -2,10 +2,14 @@
 
 namespace Modules\Authentication\Presentation\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Modules\Authentication\Application\Actions\AuthUserAction;
 use Modules\Authentication\Application\Actions\LoginUserAction;
 use Modules\Authentication\Application\Actions\LogoutUserAction;
 use Modules\Authentication\Application\Actions\RefreshTokenAction;
 use Modules\Authentication\Application\Actions\RegisterUserAction;
+use Modules\Authentication\Application\DTOs\Auth\Input\AuthUserInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\loginInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\LogoutInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\RegisterInputDto;
@@ -14,6 +18,7 @@ use Modules\Authentication\Presentation\Http\Requests\LogoutRequest;
 use Modules\Authentication\Presentation\Http\Requests\RefreshTokenRequest;
 use Modules\Authentication\Presentation\Http\Requests\RegisterRequest;
 use Modules\Authentication\Presentation\Http\Resources\AuthResource;
+use Modules\Authentication\Presentation\Http\Resources\UserResource;
 use Modules\Shared\Domain\ValueObjects\UserId;
 use Modules\Shared\Presentation\Http\Controllers\BaseController;
 
@@ -24,6 +29,7 @@ class AuthController extends BaseController
         private readonly LogoutUserAction $logoutUserAction,
         private readonly RegisterUserAction $registerUserAction,
         private readonly RefreshTokenAction $refreshTokenAction,
+        private readonly AuthUserAction $authUserAction,
     ) {
     }
 
@@ -89,6 +95,22 @@ class AuthController extends BaseController
             );
             return [
                 'message' => 'Logged out successfully.',
+            ];
+        });
+    }
+
+    public function me(Request $request): JsonResponse
+    {
+        return $this->handle(function () use ($request) {
+
+            $output = $this->authUserAction->execute(
+                new AuthUserInputDto(
+                    userId: new UserId($request->user()->id)
+                )
+            );
+            return [
+                'message' => 'Authenticated User',
+                'data' => new UserResource($output)
             ];
         });
     }
