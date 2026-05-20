@@ -4,6 +4,7 @@ namespace Modules\Authentication\Infrastructure\Listeners;
 
 use Illuminate\Support\Facades\Log;
 use Modules\Authentication\Domain\Events\UserRegistered;
+use Modules\Notifications\Domain\Contracts\NotifyUserInterface;
 
 class SendUserRegistered
 {
@@ -12,7 +13,6 @@ class SendUserRegistered
      */
     public function __construct()
     {
-        //
     }
 
 

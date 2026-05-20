@@ -71,7 +71,7 @@ final class User
         $now ??= new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'));
         $hour = (int) $now->format('H');
         $start = 8;
-        $end = 16;
+        $end = 14;
         return $hour >= $start && $hour <= $end;
     }
 

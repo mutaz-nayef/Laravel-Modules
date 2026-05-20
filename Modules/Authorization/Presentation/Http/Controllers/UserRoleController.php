@@ -19,7 +19,6 @@ use Modules\Shared\Presentation\Http\Controllers\BaseController;
 
 class UserRoleController extends BaseController
 {
-
     public function __construct(
         private readonly UserRoleGetAction $userRoleGetAction,
         private readonly UserRoleStoreAction $userRoleStoreAction,

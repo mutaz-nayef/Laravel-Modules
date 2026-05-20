@@ -42,6 +42,8 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->loadFactoriesFrom(__DIR__.'/../Database/migrations/Database/factories');
 
+        $this->loadTranslationsFrom(__DIR__.'/../lang');
+
         $this->app['router']->aliasMiddleware('isVerified', EnsureEmailIsVerified::class);
 
 

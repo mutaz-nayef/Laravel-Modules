@@ -27,7 +27,7 @@ class PasswordResetController extends BaseController
                 new ForgetPasswordInputDto(new Email($request->input('email')))
             );
             return [
-                'message' => __($status),
+                'message' => __('password.forget.sent'),
             ];
         });
     }
@@ -46,7 +46,7 @@ class PasswordResetController extends BaseController
             );
 
             return [
-                'message' => __($status),
+                'message' => __('password.reset'),
             ];
         });
 

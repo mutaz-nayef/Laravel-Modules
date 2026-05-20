@@ -41,14 +41,16 @@ class LoginUserAction
         if (!$user) {
             throw new InvalidCredentialsException('Invalid credentials. please try again.', 401);
         }
-        // Domain enforces business rules
-        $user->login($input->password);
+        try {
+            // Domain enforces business rules
+            $user->login($input->password);
 
-        $events = $user->pullDomainEvents();
-
-        foreach ($events as $event) {
-            $this->dispatcher->dispatch($event);
+        } catch (\Exception $e) {
+            $this->dispatcher->dispatchAll($user->pullDomainEvents());
+            throw $e;
         }
+
+        $this->dispatcher->dispatchAll($user->pullDomainEvents());
 
         $roles = $this->roleRepository->findByUserId($user->id());
         if ($roles) {

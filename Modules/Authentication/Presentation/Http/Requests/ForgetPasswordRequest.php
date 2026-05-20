@@ -14,4 +14,12 @@ class ForgetPasswordRequest extends BaseFormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'email.required' => __('validation.attributes.email.required'),
+            'email.exists' => __('validation.attributes.email.exists'),
+        ];
+    }
+
 }

@@ -3,14 +3,17 @@
 namespace Modules\Authentication\Infrastructure\Repositories;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
 use Modules\Authentication\Domain\ValueObjects\Email;
 use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authentication\Infrastructure\Models\UserModel;
+use Modules\Authorization\Domain\ValueObjects\RoleId;
 use Modules\Authorization\Infrastructure\Mappers\PermissionMapper;
 use Modules\Authorization\Infrastructure\Mappers\RoleMapper;
+use Modules\Notifications\Domain\ValueObjects\NotificationTypeId;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 class EloquentUserRepository implements UserRepositoryInterface
@@ -103,7 +106,43 @@ class EloquentUserRepository implements UserRepositoryInterface
             ->map(fn($user) => $this->toDomainEntity($user))
             ->values()
             ->all();
+    }
 
+    public function findByRole(string|RoleId $role): ?array
+    {
+        if ($role instanceof RoleId) {
+            return UserModel::whereHas('roles', fn($q) => $q->where('id', '=', $role->value()))
+                ->get()
+                ->map(fn($user) => $this->toDomainEntity($user))
+                ->values()
+                ->all();
+        }
+        return UserModel::whereHas('roles', fn($q) => $q->where('name', $role))
+            ->get()
+            ->map(fn($user) => $this->toDomainEntity($user))
+            ->values()
+            ->all();
+    }
+
+    public function getUserEnabledChannels(UserId $userId, NotificationTypeId $notificationTypeId): ?array
+    {
+        return DB::table('notification_preferences')
+            ->where('user_id', $userId->value())
+            ->where('notification_type_id', $notificationTypeId->value())
+            ->value('channels');
+    }
+
+    public function getAdmins(): ?array
+    {
+        return UserModel::query()
+            ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
+            ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+            ->where('roles.name', '=', 'admin')
+            ->select('users.*')
+            ->get()
+            ->map(fn($user) => $this->toDomainEntity($user))
+            ->values()
+            ->all();
     }
 
 }

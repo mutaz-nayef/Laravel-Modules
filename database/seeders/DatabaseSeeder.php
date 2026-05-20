@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Modules\Authentication\Infrastructure\Models\UserModel;
 use Modules\Authorization\Infrastructure\Database\Seeders\RolesAndPermissionsSeeder;
 use Modules\Authorization\Infrastructure\Models\RoleModel;
+use Modules\Notifications\Infrastructure\Database\Seeders\NotificationSeeder;
 
 class DatabaseSeeder extends Seeder
 {

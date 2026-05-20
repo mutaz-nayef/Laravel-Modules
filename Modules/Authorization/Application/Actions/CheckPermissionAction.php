@@ -26,7 +26,7 @@ class CheckPermissionAction
         if ($permission === null) {
             return new CheckPermissionOutputDTO(
                 allowed: false,
-                reason: "Permission '{$input->permissionName}' not assigned.",
+                reason: "You don't have permission to perform this action.",
             );
         }
         //2. Run ABAC evaluation

@@ -44,7 +44,7 @@ class AuthController extends BaseController
                 )
             );
             return [
-                'message' => 'Authenticated',
+                'message' => __('auth.login.success'),
                 'data' => new AuthResource($output)
             ];
         });
@@ -63,7 +63,7 @@ class AuthController extends BaseController
             );
 
             return [
-                'message' => 'Authenticated, We Sent you email to verify you email!',
+                'message' => __('auth.register.success').', '.__('email.verification.sent'),
                 'data' => new AuthResource($output)
             ];
         });
@@ -76,7 +76,7 @@ class AuthController extends BaseController
             $access_token = $this->refreshTokenAction->execute($request->input('refresh_token'));
 
             return [
-                'message' => 'Authenticated, We Sent you email to verify you email!',
+                'message' => '',
                 'data' => [
                     'access_token' => $access_token->plainText()
                 ]
@@ -94,7 +94,7 @@ class AuthController extends BaseController
                 )
             );
             return [
-                'message' => 'Logged out successfully.',
+                'message' => __('auth.logout.success'),
             ];
         });
     }
@@ -109,7 +109,7 @@ class AuthController extends BaseController
                 )
             );
             return [
-                'message' => 'Authenticated User',
+                'message' => __('auth.authenticated'),
                 'data' => new UserResource($output)
             ];
         });

@@ -27,7 +27,7 @@ class EmailVerificationController extends BaseController
                 )
             );
             return [
-                'message' => 'Verification link sent!',
+                'message' => __('email.verification.sent'),
             ];
         });
     }
@@ -37,7 +37,7 @@ class EmailVerificationController extends BaseController
         return $this->handle(function () use ($request) {
             $request->fulfill();
             return [
-                'message' => 'Email has been verified',
+                'message' => __('email.verified'),
             ];
         });
     }

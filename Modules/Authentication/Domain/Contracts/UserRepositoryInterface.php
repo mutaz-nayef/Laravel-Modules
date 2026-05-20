@@ -4,6 +4,8 @@ namespace Modules\Authentication\Domain\Contracts;
 
 use Modules\Authentication\Domain\Entities\User;
 use Modules\Authentication\Domain\ValueObjects\Email;
+use Modules\Authorization\Domain\ValueObjects\RoleId;
+use Modules\Notifications\Domain\ValueObjects\NotificationTypeId;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 interface UserRepositoryInterface
@@ -22,5 +24,17 @@ interface UserRepositoryInterface
      * @return User[]|null
      */
     public function getAuthUsers(): ?array;
+
+    /**
+     * @return User[]|null
+     */
+    public function findByRole(string|RoleId $role): ?array;
+
+    public function getUserEnabledChannels(
+        UserId $userId,
+        NotificationTypeId $notificationTypeId
+    ): ?array;
+
+    public function getAdmins(): ?array;
 
 }

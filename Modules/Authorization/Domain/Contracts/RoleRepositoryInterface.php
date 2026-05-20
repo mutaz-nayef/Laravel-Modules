@@ -26,4 +26,5 @@ interface RoleRepositoryInterface
 
     public function delete(RoleId $roleId): void;
 
+
 }

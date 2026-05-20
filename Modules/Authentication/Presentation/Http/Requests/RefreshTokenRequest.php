@@ -14,4 +14,10 @@ class RefreshTokenRequest extends BaseFormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'refresh_token.required' => __('validation.attributes.refresh_token.required'),
+        ];
+    }
 }
