@@ -9,6 +9,7 @@ use Modules\Authorization\Application\DTOs\Input\CheckPermissionInputDto;
 use Modules\Authorization\Domain\ValueObjects\ResourceAttributes;
 use Modules\Shared\ApiResponses;
 use Modules\Shared\Domain\ValueObjects\UserId;
+use Symfony\Component\HttpFoundation\Response;
 
 
 readonly class AbacMiddleware

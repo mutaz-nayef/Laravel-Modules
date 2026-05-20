@@ -31,8 +31,9 @@ class AuthResource extends JsonResource
                     ),
                     $this->output->roles
                 )),
+
+                'permissions' => $this->output->permissions,
             ],
-            'permissions' => $this->output->permissions,
             'token' => [
                 'access_token' => $this->output->accessToken,
                 'refresh_token' => $this->output->refreshToken,
