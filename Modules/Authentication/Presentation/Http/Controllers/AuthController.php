@@ -10,7 +10,7 @@ use Modules\Authentication\Application\Actions\LogoutUserAction;
 use Modules\Authentication\Application\Actions\RefreshTokenAction;
 use Modules\Authentication\Application\Actions\RegisterUserAction;
 use Modules\Authentication\Application\DTOs\Auth\Input\AuthUserInputDto;
-use Modules\Authentication\Application\DTOs\Auth\Input\loginInputDto;
+use Modules\Authentication\Application\DTOs\Auth\Input\LoginInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\LogoutInputDto;
 use Modules\Authentication\Application\DTOs\Auth\Input\RegisterInputDto;
 use Modules\Authentication\Presentation\Http\Requests\LoginRequest;

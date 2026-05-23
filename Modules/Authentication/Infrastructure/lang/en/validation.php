@@ -204,7 +204,7 @@ return [
         'email' => [
             'required' => 'The email field is required.',
             'email' => 'The email must be a valid email address.',
-            'exists' => 'The email field does not exist.',
+            'exists' => 'Invalid Credentials.',
             'unique' => 'The email field has already been taken.',
         ],
 
