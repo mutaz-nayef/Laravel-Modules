@@ -17,6 +17,7 @@ class BaseController extends Controller
             return self::ok($result['message'], $result['data'] ?? null);
 
         } catch (\Throwable $e) {
+            throw $e;
             return self::error(
                 $e->getMessage(),
                 $e->status ?? ($e->getCode() === 0 ? 500 : $e->getCode())

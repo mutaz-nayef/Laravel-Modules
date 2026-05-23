@@ -7,6 +7,7 @@ use Modules\Authentication\Domain\Events\LoginAttemptedOutsideAllowedTime;
 use Modules\Authentication\Infrastructure\UserAttemptLoginOutsideAllowedTime;
 use Modules\Notifications\Application\Actions\StoreNotificationsAction;
 use Modules\Notifications\Application\DTO\Input\StoreNotificationInputDto;
+use Illuminate\Support\Facades\Mail;
 
 class SendLoginAttemptedOutsideAllowedTime
 {
