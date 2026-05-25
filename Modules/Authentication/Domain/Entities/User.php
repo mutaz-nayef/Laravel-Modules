@@ -24,6 +24,7 @@ final class User
      * @param  Permission[]  $permissions
      */
     public function __construct(
+        private readonly ?UserId $id = null,
         private readonly string $name,
         private readonly Email $email,
         private readonly HashedPassword $password,
@@ -31,7 +32,6 @@ final class User
         private readonly bool $isEmailVerified,
         private ?array $roles = [],
         private ?array $permissions = [],
-        private readonly ?UserId $id = null,
 
     ) {
     }
@@ -71,7 +71,7 @@ final class User
         $now ??= new DateTimeImmutable('now', new \DateTimeZone('Asia/Jerusalem'));
         $hour = (int) $now->format('H');
         $start = 8;
-        $end = 14;
+        $end = 16;
         return $hour >= $start && $hour <= $end;
     }
 

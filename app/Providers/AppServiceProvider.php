@@ -17,7 +17,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->register(AuthServiceProvider::class);
         $this->app->register(AuthorizationServiceProvider::class);
-        $this->app->register(NotificationServiceProvider::class);
         $this->app->register(SharedServiceProvider::class);
     }
 

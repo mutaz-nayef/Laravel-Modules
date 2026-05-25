@@ -6,8 +6,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -15,9 +13,6 @@ use Modules\Authentication\Infrastructure\Database\factories\UserFactory;
 use Modules\Authorization\Infrastructure\Models\PermissionModel;
 use Modules\Authorization\Infrastructure\Models\RoleModel;
 use Modules\Authorization\Infrastructure\Models\UserPermissionPivot;
-use Modules\Notifications\Infrastructure\Models\NotificationModel;
-use Modules\Notifications\Infrastructure\Models\NotificationPreferencesModel;
-use Modules\Notifications\Infrastructure\Models\NotificationTypesModel;
 
 #[UseFactory(UserFactory::class)]
 class UserModel extends Authenticatable implements MustVerifyEmail
@@ -66,36 +61,6 @@ class UserModel extends Authenticatable implements MustVerifyEmail
         )
             ->using(UserPermissionPivot::class)
             ->withPivot('conditions');  // ← load conditions from pivot
-    }
-
-    public function notificationsTypes(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            NotificationTypesModel::class,
-            'notification_preferences',
-            'user_id',
-            'notification_type_id'
-        )->withPivot('enabled')
-            ->withTimestamps();
-    }
-
-    public function notifications(): HasMany
-    {
-        return $this->hasMany(NotificationModel::class);
-    }
-
-
-    public function notificationPreferences(): HasOne
-    {
-        return $this->hasOne(NotificationPreferencesModel::class,
-            'user_id',
-            'id',
-        );
-    }
-
-    public function receivesBroadcastNotificationsOn(): string
-    {
-        return 'admins';
     }
 
 }

@@ -57,6 +57,7 @@ class LoginUserActionTest extends TestCase
 
         $role = new Role(new RoleId(1), 'admin', 'admin');
 
+        $user->assignRole($role);
         $this->userRepository->shouldReceive('findByEmail')->once()->andReturn($user);
         $this->roleRepository->shouldReceive('findByUserId')->once()->andReturn([$role]);
         $this->tokenIssuer
@@ -66,7 +67,7 @@ class LoginUserActionTest extends TestCase
                 new IssuedToken('access_token'),
                 new IssuedToken('refresh_token')
             );
-        $this->dispatcher->shouldReceive('dispatch')->once()->andReturn(null);
+        $this->dispatcher->shouldReceive('dispatchAll')->once()->andReturn(null);
 
         $output = $this->action->execute(new LoginInputDTO('john@example.com', 'password'));
 

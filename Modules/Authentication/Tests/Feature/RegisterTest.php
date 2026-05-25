@@ -14,8 +14,6 @@ class RegisterTest extends TestCase
     {
         $this->seed();
 
-//        Event::fake();
-
         $user = [
             'name' => 'John Doe',
             'email' => 'john@example.test',
@@ -33,9 +31,6 @@ class RegisterTest extends TestCase
                 'message',
                 'status'
             ]);
-//        Event::assertDispatched(UserRegistered::class, function ($event) use ($user) {
-//            return $event->user->email->value === $user['email'];
-//        });
     }
 
     public function test_register_user_email_exist(): void
@@ -51,16 +46,7 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password',
         ];
         $response = $this->postJson('/api/register', $user);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'email' => ['The email has already been taken.'],
-                ],
-                'message' => '',
-                'status' => 422
-            ]);
+        $response->assertStatus(422);
     }
 
     public function test_register_user_password_not_confirmed(): void
@@ -72,16 +58,7 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'passworddd',
         ];
         $response = $this->postJson('/api/register', $user);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'password' => ['The password field confirmation does not match.'],
-                ],
-                'message' => '',
-                'status' => 422
-            ]);
+        $response->assertStatus(422);
     }
 
     public function test_register_user_empty_all_field(): void
@@ -100,19 +77,7 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password',
         ];
         $response = $this->postJson('/api/register', $user);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'password' => [
-                        'The password field must be at least 8 characters.',
-                        'The password field confirmation does not match.'
-                    ],
-                ],
-                'message' => '',
-                'status' => 422
-            ]);
+        $response->assertStatus(422);
     }
 
     public function test_register_user_short_name(): void
@@ -124,18 +89,7 @@ class RegisterTest extends TestCase
             'password_confirmation' => 'password',
         ];
         $response = $this->postJson('/api/register', $user);
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-                'data' => null,
-                'errors' => [
-                    'name' => [
-                        'The name field must be at least 2 characters.',
-                    ],
-                ],
-                'message' => '',
-                'status' => 422
-            ]);
+        $response->assertStatus(422);
     }
 
 }

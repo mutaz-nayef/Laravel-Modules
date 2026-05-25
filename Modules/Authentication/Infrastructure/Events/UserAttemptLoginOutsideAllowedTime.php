@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Authentication\Infrastructure;
+namespace Modules\Authentication\Infrastructure\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

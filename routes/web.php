@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Authentication\Infrastructure\UserAttemptLoginOutsideAllowedTime;
+use Modules\Authentication\Infrastructure\Events\UserAttemptLoginOutsideAllowedTime;
 
 Route::get('/', function () {
     return view('welcome');

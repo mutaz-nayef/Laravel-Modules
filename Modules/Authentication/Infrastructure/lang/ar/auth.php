@@ -17,8 +17,4 @@ return [
     'login.success' => 'تم تسجيل الدخول بنجاح',
     'register.success' => 'تم انشاء حساب جديد بنجاح',
     'logout.success' => 'تم تسجيل الخروج بنجاح',
-    'failed' => 'These credentials do not match our records.',
-    'password' => 'The provided password is incorrect.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-
 ];

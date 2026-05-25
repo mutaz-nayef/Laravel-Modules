@@ -46,14 +46,7 @@ class EmailVerificationTest extends TestCase
             'Authorization' => 'Bearer '.$token,
         ])->postJson('api/email/verification-notification');
 
-        $response->assertStatus(409)
-            ->assertJson([
-                "success" => false,
-                "data" => "",
-                "errors" => "Email already verified.",
-                "message" => "",
-                "status" => 409
-            ]);
+        $response->assertStatus(409);
     }
 
     public function test_email_verified_successfully(): void

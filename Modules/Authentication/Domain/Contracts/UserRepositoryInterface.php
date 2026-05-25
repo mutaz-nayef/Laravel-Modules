@@ -30,11 +30,6 @@ interface UserRepositoryInterface
      */
     public function findByRole(string|RoleId $role): ?array;
 
-    public function getUserEnabledChannels(
-        UserId $userId,
-        NotificationTypeId $notificationTypeId
-    ): ?array;
-
     public function getAdmins(): ?array;
 
 }

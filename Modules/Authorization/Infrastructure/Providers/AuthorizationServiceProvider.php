@@ -71,7 +71,5 @@ class AuthorizationServiceProvider extends ServiceProvider
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(PolicyEngineInterface::class, PolicyEngine::class);
         $this->app->bind(FieldGuardServiceInterface::class, FieldGuardService::class);
-        $this->app->bind(LaravelReverb::class, RealtimePublisher::class);
-
     }
 }

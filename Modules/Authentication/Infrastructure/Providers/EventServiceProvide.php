@@ -13,7 +13,6 @@ use Modules\Authentication\Infrastructure\Listeners\SendPasswordResetRequested;
 use Modules\Authentication\Infrastructure\Listeners\SendPasswordResetSuccessfully;
 use Modules\Authentication\Infrastructure\Listeners\SendUserLoggedIn;
 use Modules\Authentication\Infrastructure\Listeners\SendUserRegistered;
-use Modules\Authorization\Infrastructure\Listeners\AssignNewUserRoleListener;
 
 
 class EventServiceProvide extends BaseEventServiceProvider
@@ -22,7 +21,6 @@ class EventServiceProvide extends BaseEventServiceProvider
     protected $listen = [
         UserRegistered::class => [
             SendUserRegistered::class,
-            AssignNewUserRoleListener::class,
         ],
         UserLoggedIn::class => [
             SendUserLoggedIn::class,

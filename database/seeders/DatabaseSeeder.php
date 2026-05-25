@@ -35,7 +35,5 @@ class DatabaseSeeder extends Seeder
             'email' => 'editor@example.com',
         ]);
         $editor->roles()->attach($editorRole);
-
-        $this->call(NotificationSeeder::class);
     }
 }

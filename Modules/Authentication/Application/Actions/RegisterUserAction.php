@@ -15,7 +15,6 @@ use Modules\Authentication\Domain\ValueObjects\HashedPassword;
 use Modules\Authorization\Domain\Contracts\RoleRepositoryInterface;
 use Modules\Authorization\Domain\Entities\Permission;
 use Modules\Authorization\Domain\Exceptions\RoleNotFoundException;
-use Modules\Notifications\Domain\Contracts\NotificationServiceInterface;
 use Modules\Shared\Abstractions\EventDispatcherInterface;
 
 class RegisterUserAction
@@ -26,7 +25,6 @@ class RegisterUserAction
         private readonly RoleRepositoryInterface $roleRepository,
         private readonly EmailVerificationInterface $emailVerification,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly NotificationServiceInterface $notificationService,
     ) {
     }
 
@@ -71,8 +69,6 @@ class RegisterUserAction
 
         $this->dispatcher->dispatch(new UserRegistered($user->id()));
 
-//        $notification = new Notification();
-        
         // return output dto
         return new AuthOutputDto(
             userId: $user->id()->value(),

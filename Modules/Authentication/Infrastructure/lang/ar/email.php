@@ -16,8 +16,4 @@ return [
     'verification.sent' => 'تم ارسال رسالة تأكيد للايميل',
     'verified' => 'تم تأكيد الايميل',
     'login.success' => 'تم تسجيل الدخول بنجاح',
-    'failed' => 'These credentials do not match our records.',
-    'password' => 'The provided password is incorrect.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-
 ];

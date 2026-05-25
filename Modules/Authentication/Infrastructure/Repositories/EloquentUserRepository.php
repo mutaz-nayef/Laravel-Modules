@@ -3,7 +3,6 @@
 namespace Modules\Authentication\Infrastructure\Repositories;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Domain\Entities\User;
@@ -13,7 +12,6 @@ use Modules\Authentication\Infrastructure\Models\UserModel;
 use Modules\Authorization\Domain\ValueObjects\RoleId;
 use Modules\Authorization\Infrastructure\Mappers\PermissionMapper;
 use Modules\Authorization\Infrastructure\Mappers\RoleMapper;
-use Modules\Notifications\Domain\ValueObjects\NotificationTypeId;
 use Modules\Shared\Domain\ValueObjects\UserId;
 
 class EloquentUserRepository implements UserRepositoryInterface
@@ -122,14 +120,6 @@ class EloquentUserRepository implements UserRepositoryInterface
             ->map(fn($user) => $this->toDomainEntity($user))
             ->values()
             ->all();
-    }
-
-    public function getUserEnabledChannels(UserId $userId, NotificationTypeId $notificationTypeId): ?array
-    {
-        return DB::table('notification_preferences')
-            ->where('user_id', $userId->value())
-            ->where('notification_type_id', $notificationTypeId->value())
-            ->value('channels');
     }
 
     public function getAdmins(): ?array

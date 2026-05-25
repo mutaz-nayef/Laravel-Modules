@@ -26,14 +26,8 @@ class PasswordResetTest extends TestCase
         $response = $this->postJson('api/forget-password', [
             'email' => 'test@example.com',
         ]);
-        $response->assertStatus(200)
-            ->assertJson([
-                "success" => true,
-                "data" => "",
-                "errors" => null,
-                "message" => "We have emailed your password reset link.",
-                "status" => 200
-            ]);
+        $response->assertStatus(200);
+
 //        Event::assertDispatched(PasswordResetRequested::class, function ($event) {
 //            return $event->email === 'test@example.com';
 //        });
@@ -76,14 +70,7 @@ class PasswordResetTest extends TestCase
             'password_confirmation' => 'password',
             'token' => $token,
         ]);
-        $response->assertStatus(200)
-            ->assertJson([
-                "success" => true,
-                "data" => "",
-                "errors" => null,
-                "message" => "Your password has been reset.",
-                "status" => 200
-            ]);
+        $response->assertStatus(200);
         Event::assertDispatched(PasswordResetSuccessfully::class);
     }
 

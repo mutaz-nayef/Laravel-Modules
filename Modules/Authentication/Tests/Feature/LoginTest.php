@@ -15,7 +15,6 @@ class LoginTest extends TestCase
 
     public function test_user_can_login_and_receive_token_with_permissions()
     {
-
         $this->seed(RolesAndPermissionsSeeder::class);
 
         $role = RoleModel::where('name', 'admin')->first();
@@ -30,16 +29,15 @@ class LoginTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    'user' => ['id', 'name', 'email', 'roles'],
-                    'permissions' => [],
-                    'token' => ['access_token', 'token_type',],
+                    'user' => ['id', 'name', 'email', 'roles', 'permissions' => []],
+                    'tokens' => ['access_token', 'token_type']
                 ],
                 'errors',
                 'message',
                 'status'
-            ])->assertJsonPath('data.token.token_type', 'Bearer');
+            ])->assertJsonPath('data.tokens.token_type', 'Bearer');
         $this->assertNotEmpty($response->json('data.user.roles'));
-        $this->assertNotEmpty($response->json('data.token.access_token'));
+        $this->assertNotEmpty($response->json('data.tokens.access_token'));
     }
 
     public function test_user_cannot_login_not_allowed_time(): void

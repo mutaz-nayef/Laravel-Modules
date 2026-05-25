@@ -5,9 +5,7 @@ namespace Modules\Authentication\Infrastructure\Providers;
 use Carbon\Laravel\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Modules\Authentication\Domain\Contracts\EmailVerificationInterface;
-use Modules\Authentication\Domain\Contracts\PasswordHasherInterface;
 use Modules\Authentication\Domain\Contracts\PasswordResetInterface;
-use Modules\Authentication\Domain\Contracts\PasswordVerifierInterface;
 use Modules\Authentication\Domain\Contracts\TokenIssuerInterface;
 use Modules\Authentication\Domain\Contracts\UserRepositoryInterface;
 use Modules\Authentication\Infrastructure\Console\Commands\LogoutTimeCommand;
@@ -16,9 +14,6 @@ use Modules\Authentication\Infrastructure\Repositories\EloquentUserRepository;
 use Modules\Authentication\Infrastructure\Services\Security\LaravelEmailVerification;
 use Modules\Authentication\Infrastructure\Services\Security\LaravelPasswordReset;
 use Modules\Authentication\Infrastructure\Services\Security\LaravelSanctumToken;
-use Modules\Authentication\Infrastructure\Services\Security\PasswordHasherResolver;
-use Modules\Authentication\Infrastructure\Services\Security\PasswordVerifier;
-use Modules\Authentication\Presentation\Http\Middleware\CheckLoginTimeMiddleware;
 use Modules\Authentication\Presentation\Http\Middleware\EnsureEmailIsVerified;
 
 class AuthServiceProvider extends ServiceProvider
@@ -69,11 +64,5 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->bind(EmailVerificationInterface::class, LaravelEmailVerification::class);
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
 
-
-        $this->app->bind(PasswordVerifierInterface::class, PasswordVerifier::class);
-        $this->app->bind(PasswordHasherInterface::class, function ($app) {
-            $resolver = $app->make(PasswordHasherResolver::class);
-            return $this->app->make($resolver->resolve());
-        });
     }
 }

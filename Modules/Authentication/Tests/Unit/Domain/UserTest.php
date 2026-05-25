@@ -3,7 +3,6 @@
 namespace Modules\Authentication\Tests\Unit\Domain;
 
 use Modules\Authentication\Domain\Entities\User;
-use Modules\Authentication\Domain\Exceptions\EmailNotVerifiedException;
 use Modules\Authentication\Domain\Exceptions\InvalidCredentialsException;
 use Modules\Authentication\Domain\Exceptions\LoginNotAllowedThisTimeException;
 use Modules\Authentication\Domain\Exceptions\UserNotActiveException;
@@ -22,7 +21,6 @@ class UserTest extends TestCase
     /**
      * @throws \DateMalformedStringException
      * @throws LoginNotAllowedThisTimeException
-     * @throws EmailNotVerifiedException
      * @throws UserNotActiveException
      * @throws InvalidCredentialsException
      */
